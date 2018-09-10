@@ -1,0 +1,93 @@
+{
+  "name": "Dashboard Notifications",
+
+  "namespace": "Vanderbilt\\DashboardNotificationsExternalModule",
+
+  "authors": [
+    {
+      "name": "Ryan Moore",
+      "email": "datacore@vanderbilt.edu",
+      "institution": "Vanderbilt University Medical Center"
+    }
+  ],
+
+  "description": "Module for generating and managing notifications for display in external dashboards or report pages. Requires a REDCap project to store notifcations.",
+
+  "permissions": [
+    "select_data",
+    "redcap_module_link_check_display"
+  ],
+
+  "links": {
+    "project": [
+      {
+        "name": "Configure Notifications",
+        "icon": "report",
+        "url": "configure.php",
+        "access": "design"
+      }
+    ]
+  },
+  "project-settings": [
+    {
+      "key": "notif-project",
+      "name": "Project That Stores Notifications",
+      "type":"project-id",
+      "repeatable": false
+    },
+    {
+      "key": "notif-name",
+      "name": "Field That Stores the Name for Notifications",
+      "type":"text",
+      "repeatable": false
+    },
+    {
+      "key": "project-field",
+      "name": "Field That Stores the Project ID for the Project the Notification Applies To",
+      "type":"text",
+      "repeatable": false
+    },
+    {
+      "key": "notif-alert",
+      "name": "Field That Stores the Text Alert to be Associatd with a Notification",
+      "type":"text",
+      "repeatable": false
+    },
+    {
+      "key": "notif-type",
+      "name": "Field That Stores the Type of Notification",
+      "type":"text",
+      "repeatable": false
+    },
+    {
+      "key": "notif-class",
+      "name": "Field That Stores the Classification of Notification",
+      "type":"text",
+      "repeatable": false
+    },
+    {
+      "key": "access-json",
+      "name": "Text field that stores JSON string to define notification behavior",
+      "type":"text",
+      "repeatable": false
+    },
+    {
+      "key": "role-list",
+      "name": "Field that tracks user roles that need to get the notification",
+      "type":"text",
+      "repeatable": false
+    },
+    {
+      "key": "role-resolve",
+      "name": "Field that tracks user roles that resolve the notification",
+      "type":"text",
+      "repeatable": false
+    },
+    {
+      "key": "notif-active",
+      "name": "Radio field that tracks if this notification is active",
+      "type":"text",
+      "repeatable": false
+    }
+  ]
+}
