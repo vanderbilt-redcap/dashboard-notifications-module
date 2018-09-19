@@ -13,7 +13,7 @@ use ExternalModules\ExternalModules;
 
 class DashboardNotificationsExternalModule extends AbstractExternalModule
 {
-    function redcap_module_link_check_display($project_id, $link, $record, $instrument, $instance, $page) {
+    function redcap_module_link_check_display($project_id, $link) {
         if(\REDCap::getUserRights(USERID)[USERID]['design'] == '1'){
             return $link;
         }
@@ -119,9 +119,5 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             $rawToLabel[$key] = $value;
         }
         return $rawToLabel;
-    }
-
-    function processNotifSettings($jsonSettings) {
-
     }
 }

@@ -43,23 +43,22 @@ if ($projectID != "" && $notifProjectID != "") {
                 case "0":
                     break;
                 case "1":
-                    $notifSettings['project_production'] = db_real_escape_string($_POST['form_setting']);
+                    $notifSettings['project_production'] = db_real_escape_string($_POST['project_production']);
                     break;
                 case "2":
                     foreach ($_POST['form_names'] as $index => $formName) {
                         $notifSettings['forms_field'][$index] = db_real_escape_string($formName);
                     }
-                    $notifSettings['project_production'] = db_real_escape_string($_POST['form_setting']);
+                    $notifSettings['project_production'] = db_real_escape_string($_POST['project_production']);
                     break;
                 case "3":
                     foreach ($_POST['field_names'] as $index => $fieldName) {
                         $notifSettings['field_names'][$index] = db_real_escape_string($fieldName);
-                        $notifSettings['field_value'][$index] = array_map('db_real_escape_string', (is_array($_POST['field_value_'.$index]) ? $_POST['field_value_'.$index] : array($_POST['field_value_'.$index])));
                     }
                     break;
                 case "4":
-                    $notifSettings['user_new'] = db_real_escape_string($_POST['user_new_setting']);
-                    $notifSettings['user_edit'] = db_real_escape_string($_POST['user_edit_setting']);
+                    $notifSettings['user_new'] = db_real_escape_string($_POST['user_new']);
+                    $notifSettings['user_edit'] = db_real_escape_string($_POST['user_edit']);
                     break;
                 case "5":
                     foreach ($_POST['field_names'] as $index => $fieldName) {
@@ -90,11 +89,11 @@ if ($projectID != "" && $notifProjectID != "") {
     $existingNotifs = $module->getNotifications($notifProjectID);
     echo "<div class='col-md-12'>
         <form method='post' action='".$module->getUrl('configure.php')."'>
-            <div id='notif_container' class='col-md-2 bg-info'>
+            <div id='notif_container' class='col-md-2 bg-info' style='min-width:150px;padding:10px;'>
                 <div style='font-weight:bold;border-bottom:4px solid;'>Select or Create a New Notification</div>
                 <div>
                     Select a Notification<br/>
-                    <select id='notif_select' onchange='hideShowNewNotif(this,\"new_role\");'></select>
+                    <select id='notif_select' onchange='hideShowNewNotif(this,\"new_role\");' style='min-width:125px;text-overflow: ellipsis;'></select>
                 </div>
                 <div id='new_role' style='display:none;'>
                     Name for New Notifcation<br/>
