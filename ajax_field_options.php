@@ -25,7 +25,7 @@ if (isset($_POST['field_name']) && is_numeric($_POST['field_count']) && is_numer
         $fieldChoices = $module->getChoicesFromMetaData($metaData[$fieldName]['element_enum']);
         $returnHTML = "<table><tr>";
         foreach ($fieldChoices as $raw => $label) {
-            $returnHTML .= "<td><span><input type='checkbox' id='field_value_".$fieldCount."_".$choiceCount."' name='field_value_".$fieldCount."[]' value='$raw' /></span><span>$label</span></td>";
+            $returnHTML .= "<td><span><input type='checkbox' id='".FIELD_VALUE_SETTING."_".$fieldCount."_".$choiceCount."' name='".FIELD_VALUE_SETTING."_".$fieldCount."[]' value='$raw' /></span><span>$label</span></td>";
             if ($columnCount % 3 == 0) {
                 $returnHTML .= "</tr><tr>";
                 $columnCount = 0;
@@ -47,18 +47,18 @@ if (isset($_POST['field_name']) && is_numeric($_POST['field_count']) && is_numer
         $returnHTML = "<table>
             <tr>
                 <td>
-                <span><input type='radio' id='field_value_".$fieldCount."_0' name='field_value_".$fieldCount."[]' value='0' /></span><span>$zeroLabel</span>
+                <span><input type='radio' id='".FIELD_VALUE_SETTING."_".$fieldCount."_0' name='".FIELD_VALUE_SETTING."_".$fieldCount."[]' value='0' /></span><span>$zeroLabel</span>
                 </td>
             </tr>
             <tr>
                 <td>
-                <span><input type='radio' id='field_value_".$fieldCount."_1' name='field_value_".$fieldCount."[]' value='1' /></span><span>$oneLabel</span>
+                <span><input type='radio' id='".FIELD_VALUE_SETTING."_".$fieldCount."_1' name='".FIELD_VALUE_SETTING."_".$fieldCount."[]' value='1' /></span><span>$oneLabel</span>
                 </td>
             </tr>
         </table>";
     }
     else {
-        $returnHTML = "<span><input type='text' id='field_value_".$fieldCount."_".$choiceCount."' name='field_value_$fieldCount'/></span>";
+        $returnHTML = "<span><input type='text' id='".FIELD_VALUE_SETTING."_".$fieldCount."_".$choiceCount."' name='".FIELD_VALUE_SETTING."_$fieldCount'/></span>";
     }
 }
 

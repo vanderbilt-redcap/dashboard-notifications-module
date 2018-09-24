@@ -15,7 +15,8 @@
 
   "permissions": [
     "select_data",
-    "redcap_module_link_check_display"
+    "redcap_module_link_check_display",
+    "hook_every_page_top"
   ],
 
   "links": {
@@ -86,6 +87,30 @@
     {
       "key": "notif-active",
       "name": "Radio field that tracks if this notification is active",
+      "type":"text",
+      "repeatable": false
+    },
+    {
+      "key": "user-created",
+      "name": "Text field to store which user triggered a notification event",
+      "type":"text",
+      "repeatable": false
+    },
+    {
+      "key": "notif-date",
+      "name": "Date field that contains when a notification event occurs",
+      "type":"text",
+      "repeatable": false
+    },
+    {
+      "key": "pastdue-date",
+      "name": "Date field that contains when a notification is considered past due",
+      "type":"text",
+      "repeatable": false
+    },
+    {
+      "key": "notif-context",
+      "name": "Paragraph text field that stores the context of a notification event",
       "type":"text",
       "repeatable": false
     }
