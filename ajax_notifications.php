@@ -142,7 +142,7 @@ echo $returnHTML;
     var projectFormList = {};
     <?php
         foreach (array_keys($notifProject->forms) as $key) {
-            echo "projectFormList['$key'] = '".$notifProject->forms[$key]['menu']."';";
+            echo "projectFormList['$key'] = '".cleanJavaString($notifProject->forms[$key]['menu'])."';";
         }
     ?>
     var projectFieldList = {};
@@ -151,7 +151,7 @@ echo $returnHTML;
     //console.log(notificationSettings);
     <?php
     foreach ($sourceMetaData as $fieldName => $fieldMeta) {
-        echo "projectFieldList['$fieldName'] = '" . $fieldMeta['element_label'] . "';";
+        echo "projectFieldList['$fieldName'] = '" . cleanJavaString($fieldMeta['element_label']) . "';";
         echo "fieldValueList['$fieldName'] = {};";
         if (in_array($fieldMeta['element_type'], array("radio", "select", "checkbox", "yesno", "truefalse"))) {
             if ($fieldMeta['element_type'] == "truefalse") {
@@ -163,7 +163,7 @@ echo $returnHTML;
             } else {
                 $fieldChoices = $module->getChoicesFromMetaData($fieldMeta['element_enum']);
                 foreach ($fieldChoices as $raw => $label) {
-                    echo "fieldValueList['$fieldName']['$raw'] = '$label';";
+                    echo "fieldValueList['$fieldName']['$raw'] = '".cleanJavaString($label)."';";
                 }
             }
         }
@@ -249,7 +249,7 @@ echo $returnHTML;
         var count = getNewCount('fields_');
         var returnHTML = "<div id='fields_"+count+"'><table style='border: 1px solid'><tr style='background-color:lightblue;'><td><button type='button' onclick='removeDiv(\"fields_"+count+"\");'>X</button></td><td><div style='padding:3px;'><span>Field Name to Trigger Notification: </span><span><select onchange='loadFieldOptions(this,\"field_options_"+count+"\",\"<?=$recordID?>\",\""+count+"\");' id='<?= $module::FIELD_NAME_SETTING ?>_"+count+"' name='<?= $module::FIELD_NAME_SETTING ?>[]'><option value=''></option>";
         for (var key in projectFieldList) {
-            returnHTML += "<option value='"+key+"'>"+projectFieldList[key]+" ("+key+")</option>";
+            returnHTML += "<option value='"+key+"'>("+key+") -- "+projectFieldList[key]+"</option>";
         }
 
         returnHTML += "</select></span></div></td></tr><tr><td></td><td><div id='field_options_"+count+"'></div></td></tr></table></div>";
@@ -285,24 +285,26 @@ echo $returnHTML;
 
     function loadNotifSettings() {
         <?php
-            foreach ($notifSettings[$module::FIELD_NAME_SETTING] as $index => $fieldName) {
+            $index = 0;
+            foreach ($notifSettings[$module::FIELD_NAME_SETTING] as $fieldName => $fieldValues) {
                 if ($index > 0) {
                     echo "$('#add_field').trigger(\"click\");";
                 }
                 echo "$('#".$module::FIELD_NAME_SETTING."_$index').val('$fieldName').change();";
                 if (in_array($sourceMetaData[$fieldName]['element_type'],array("select","radio","checkbox","yesno","truefalse"))) {
-                    foreach ($notifSettings[$module::FIELD_VALUE_SETTING][$index] as $count => $value) {
+                    foreach ($fieldValues as $count => $value) {
                         echo "$('[id^=".$module::FIELD_VALUE_SETTING."_".$index."_] :input[value=\"$value\"]').prop(\"checked\",true);";
                     }
                 }
                 else {
-                    foreach ($notifSettings[$module::FIELD_VALUE_SETTING][$index] as $count => $value) {
+                    foreach ($fieldValues as $count => $value) {
                         if ($count > 0) {
                             echo "addNewDiv('field_repeat',generateFieldList);";
                         }
                         echo "$(\"#".$module::FIELD_VALUE_SETTING."_".$index."_".$count."\").val('".$value."');";
                     }
                 }
+                $index++;
             }
             foreach ($notifSettings['forms_field'] as $count => $value) {
                 if ($count > 0) {
@@ -319,3 +321,8 @@ echo $returnHTML;
         //loadNotifSettings();
     });
 </script>
+<?php
+function cleanJavaString($junkstring) {
+    return trim(preg_replace('/\s+/',' ',str_replace("'","\"",strip_tags($junkstring))));
+}
+?>

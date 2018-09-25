@@ -62,8 +62,8 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         return null;
     }
 
-    function getNotifications($projectID) {
-        $returnData = \Records::getData($projectID);
+    function getNotifications($projectID,$sourceProjectID) {
+        $returnData = \REDCap::getData($projectID, 'array', "", array(), array(), array(), false, false, false, "([" . $this->getProjectSetting('project-field') . "] = '$sourceProjectID')");
         return $returnData;
     }
 

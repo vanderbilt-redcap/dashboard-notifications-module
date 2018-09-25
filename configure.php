@@ -53,7 +53,8 @@ if ($projectID != "" && $notifProjectID != "") {
                     break;
                 case "3":
                     foreach ($_POST[$module::FIELD_NAME_SETTING] as $index => $fieldName) {
-                        $notifSettings[$module::FIELD_NAME_SETTING][$index] = db_real_escape_string($fieldName);
+                        //$notifSettings[$module::FIELD_NAME_SETTING][$index] = db_real_escape_string($fieldName);
+                        $notifSettings[$module::FIELD_NAME_SETTING][db_real_escape_string($fieldName)] = [];
                     }
                     break;
                 case "4":
@@ -62,42 +63,46 @@ if ($projectID != "" && $notifProjectID != "") {
                     break;
                 case "5":
                     foreach ($_POST[$module::FIELD_NAME_SETTING] as $index => $fieldName) {
-                        $notifSettings[$module::FIELD_NAME_SETTING][$index] = db_real_escape_string($fieldName);
-                        $notifSettings[$module::FIELD_VALUE_SETTING][$index] = array_map('db_real_escape_string', (is_array($_POST[$module::FIELD_VALUE_SETTING.'_'.$index]) ? $_POST[$module::FIELD_VALUE_SETTING.'_'.$index] : array($_POST[$module::FIELD_VALUE_SETTING.'_'.$index])));
+                        /*$notifSettings[$module::FIELD_NAME_SETTING][$index] = db_real_escape_string($fieldName);
+                        $notifSettings[$module::FIELD_VALUE_SETTING][$index] = array_map('db_real_escape_string', (is_array($_POST[$module::FIELD_VALUE_SETTING.'_'.$index]) ? $_POST[$module::FIELD_VALUE_SETTING.'_'.$index] : array($_POST[$module::FIELD_VALUE_SETTING.'_'.$index])));*/
+                        $notifSettings[$module::FIELD_NAME_SETTING][db_real_escape_string($fieldName)] = array_map('db_real_escape_string', (is_array($_POST[$module::FIELD_VALUE_SETTING.'_'.$index]) ? $_POST[$module::FIELD_VALUE_SETTING.'_'.$index] : array($_POST[$module::FIELD_VALUE_SETTING.'_'.$index])));
                     }
                     break;
                 case "6":
                     foreach ($_POST[$module::FIELD_NAME_SETTING] as $index => $fieldName) {
-                        $notifSettings[$module::FIELD_NAME_SETTING][$index] = db_real_escape_string($fieldName);
-                        $notifSettings[$module::FIELD_VALUE_SETTING][$index] = array_map('db_real_escape_string', (is_array($_POST[$module::FIELD_VALUE_SETTING.'_'.$index]) ? $_POST[$module::FIELD_VALUE_SETTING.'_'.$index] : array($_POST[$module::FIELD_VALUE_SETTING.'_'.$index])));
+                        /*$notifSettings[$module::FIELD_NAME_SETTING][$index] = db_real_escape_string($fieldName);
+                        $notifSettings[$module::FIELD_VALUE_SETTING][$index] = array_map('db_real_escape_string', (is_array($_POST[$module::FIELD_VALUE_SETTING.'_'.$index]) ? $_POST[$module::FIELD_VALUE_SETTING.'_'.$index] : array($_POST[$module::FIELD_VALUE_SETTING.'_'.$index])));*/
+                        $notifSettings[$module::FIELD_NAME_SETTING][db_real_escape_string($fieldName)] = array_map('db_real_escape_string', (is_array($_POST[$module::FIELD_VALUE_SETTING.'_'.$index]) ? $_POST[$module::FIELD_VALUE_SETTING.'_'.$index] : array($_POST[$module::FIELD_VALUE_SETTING.'_'.$index])));
                     }
                     break;
                 case "7":
                     foreach ($_POST[$module::FIELD_NAME_SETTING] as $index => $fieldName) {
-                        $notifSettings[$module::FIELD_NAME_SETTING][$index] = db_real_escape_string($fieldName);
-                        $notifSettings[$module::FIELD_VALUE_SETTING][$index] = array_map('db_real_escape_string', (is_array($_POST[$module::FIELD_VALUE_SETTING.'_'.$index]) ? $_POST[$module::FIELD_VALUE_SETTING.'_'.$index] : array($_POST[$module::FIELD_VALUE_SETTING.'_'.$index])));
+                        /*$notifSettings[$module::FIELD_NAME_SETTING][$index] = db_real_escape_string($fieldName);
+                        $notifSettings[$module::FIELD_VALUE_SETTING][$index] = array_map('db_real_escape_string', (is_array($_POST[$module::FIELD_VALUE_SETTING.'_'.$index]) ? $_POST[$module::FIELD_VALUE_SETTING.'_'.$index] : array($_POST[$module::FIELD_VALUE_SETTING.'_'.$index])));*/
+                        $notifSettings[$module::FIELD_NAME_SETTING][db_real_escape_string($fieldName)] = array_map('db_real_escape_string', (is_array($_POST[$module::FIELD_VALUE_SETTING.'_'.$index]) ? $_POST[$module::FIELD_VALUE_SETTING.'_'.$index] : array($_POST[$module::FIELD_VALUE_SETTING.'_'.$index])));
                     }
                     $notifSettings[$module::RECORD_COUNT_SETTING] = db_real_escape_string($_POST[$module::RECORD_COUNT_SETTING]);
                     break;
             }
             $notifSettings[$module::PASTDUE_SETTING] = db_real_escape_string($_POST[$module::PASTDUE_SETTING]);
             $saveData[$module->getProjectSetting("access-json")] = json_encode($notifSettings);
-
             \Records::saveData($notifProjectID, 'array', [$saveData[$notifProject->table_pk] => [$notifProject->firstEventId => $saveData]],$overwrite);
+            \Records::addRecordToRecordListCache($notifProjectID,$saveData[$notifProject->table_pk],$notifProject->firstArmId);
         }
     }
-    $existingNotifs = $module->getNotifications($notifProjectID);
+    $existingNotifs = $module->getNotifications($notifProjectID,$projectID);
+
     echo "<div class='col-md-12'>
         <form method='post' action='".$module->getUrl('configure.php')."'>
             <div id='notif_container' class='col-md-2 bg-info' style='min-width:150px;padding:10px;'>
                 <div style='font-weight:bold;border-bottom:4px solid;'>Select or Create a New Notification</div>
                 <div>
                     Select a Notification<br/>
-                    <select id='notif_select' onchange='hideShowNewNotif(this,\"new_role\");' style='min-width:125px;text-overflow: ellipsis;'></select>
+                    <select id='notif_select' onchange='hideShowNewNotif(this,\"new_role\");' style='width:125px;text-overflow: ellipsis;'></select>
                 </div>
                 <div id='new_role' style='display:none;'>
                     Name for New Notifcation<br/>
-                    <input type='text' id='new_notif_name'/>
+                    <input style='width:125px;' type='text' id='new_notif_name'/>
                 </div>
                 <div><button id='submit_role' type='button' onclick='loadRole(\"notif_select\",\"new_notif_name\",\"notif_information\");'>Apply</button></div>
             </div>
@@ -136,7 +141,7 @@ if ($projectID != "" && $notifProjectID != "") {
                 }
             }
             ?>
-            $('#notif_select').append($('<option></option>').attr('value','new').text('New Notification'));
+            $('#notif_select').append($('<option></option>').attr('value','new').text('New Notification')).change();
         });
         function loadRole(notif,newName,destination) {
             var notifValue = $('#'+notif).val();
