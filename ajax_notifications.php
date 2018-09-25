@@ -13,9 +13,11 @@ $returnHTML = "";
 if (isset($_POST['notif_record']) && isset($_POST['new_name']) && is_numeric($projectID) && is_numeric($notifProjectID)) {
     $recordID = "";
     $notifProject = new \Project($notifProjectID);
+    $sourceProject = new \Project($projectID);
 
     //$notifProject->project['secondary_pk'];
     $notifMetaData = $notifProject->metadata;
+    $sourceMetaData = $sourceProject->metadata;
     /*echo "<pre>";
     print_r($notifMetaData);
     echo "</pre>";*/
@@ -148,7 +150,7 @@ echo $returnHTML;
     var notificationSettings = jQuery.parseJSON('<?= json_encode($notifSettings) ?>');
     //console.log(notificationSettings);
     <?php
-    foreach ($notifMetaData as $fieldName => $fieldMeta) {
+    foreach ($sourceMetaData as $fieldName => $fieldMeta) {
         echo "projectFieldList['$fieldName'] = '" . $fieldMeta['element_label'] . "';";
         echo "fieldValueList['$fieldName'] = {};";
         if (in_array($fieldMeta['element_type'], array("radio", "select", "checkbox", "yesno", "truefalse"))) {
@@ -288,7 +290,7 @@ echo $returnHTML;
                     echo "$('#add_field').trigger(\"click\");";
                 }
                 echo "$('#".$module::FIELD_NAME_SETTING."_$index').val('$fieldName').change();";
-                if (in_array($notifMetaData[$fieldName]['element_type'],array("select","radio","checkbox","yesno","truefalse"))) {
+                if (in_array($sourceMetaData[$fieldName]['element_type'],array("select","radio","checkbox","yesno","truefalse"))) {
                     foreach ($notifSettings[$module::FIELD_VALUE_SETTING][$index] as $count => $value) {
                         echo "$('[id^=".$module::FIELD_VALUE_SETTING."_".$index."_] :input[value=\"$value\"]').prop(\"checked\",true);";
                     }
