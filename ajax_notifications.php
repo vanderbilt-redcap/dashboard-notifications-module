@@ -31,7 +31,8 @@ if (isset($_POST['notif_record']) && isset($_POST['new_name']) && is_numeric($pr
 
     if ($recordID != "") {
         try {
-            $recordData = \Records::getData($projectID, 'array', array($recordID));
+            $recordData = \Records::getData($notifProjectID, 'array', array($recordID));
+
             foreach ($recordData as $recordID => $eventData) {
                 foreach ($eventData as $eventID => $fieldData) {
                     if ($eventID == "repeat_instances") {
@@ -59,9 +60,7 @@ if (isset($_POST['notif_record']) && isset($_POST['new_name']) && is_numeric($pr
             echo $e->getMessage()."<br/>";
         }
     }
-    /*echo "<pre>";
-    print_r($notifSettings);
-    echo "</pre>";*/
+
     if ($_POST['new_name'] != "") $notifName = db_real_escape_string($_POST['new_name']);
     $returnHTML .= "<div style='padding: 3px;background-color:lightgreen;border:1px solid;'>Notification Name: <input name='".$module->getProjectSetting("notif-name")."' id='".$module->getProjectSetting("notif-name")."' type='text' value='".$notifName."' /></div>
                 <div style='padding: 3px;background-color:lightgreen;border:1px solid;'><span style='display:inline-block;'>Active Notification?</span><span style='display:inline-block;'><input name='".$module->getProjectSetting("notif-active")."' type='radio' value='0' ".($notifActive == "0" ? "checked" : "")."/>No<br/><input name='".$module->getProjectSetting("notif-active")."' type='radio' value='1' ".($notifActive == "1" ? "checked" : "")."/>Yes</span></div>
@@ -205,7 +204,6 @@ echo $returnHTML;
     function loadFieldOptions(select_field, destination, record_id, count) {
         var nameValue = select_field.value;
         var sourceName = select_field.name;
-
         var returnHTML = "";
         var fieldValueCount = 0;
         if (Object.keys(fieldValueList[nameValue]).length > 0) {
@@ -293,7 +291,7 @@ echo $returnHTML;
                 echo "$('#".$module::FIELD_NAME_SETTING."_$index').val('$fieldName').change();";
                 if (in_array($sourceMetaData[$fieldName]['element_type'],array("select","radio","checkbox","yesno","truefalse"))) {
                     foreach ($fieldValues as $count => $value) {
-                        echo "$('[id^=".$module::FIELD_VALUE_SETTING."_".$index."_] :input[value=\"$value\"]').prop(\"checked\",true);";
+                        echo "$('[id^=".$module::FIELD_VALUE_SETTING."_".$index."_]:input[value=\"$value\"]').prop(\"checked\",true);";
                     }
                 }
                 else {

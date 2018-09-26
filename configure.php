@@ -86,8 +86,11 @@ if ($projectID != "" && $notifProjectID != "") {
             }
             $notifSettings[$module::PASTDUE_SETTING] = db_real_escape_string($_POST[$module::PASTDUE_SETTING]);
             $saveData[$module->getProjectSetting("access-json")] = json_encode($notifSettings);
-            \Records::saveData($notifProjectID, 'array', [$saveData[$notifProject->table_pk] => [$notifProject->firstEventId => $saveData]],$overwrite);
-            \Records::addRecordToRecordListCache($notifProjectID,$saveData[$notifProject->table_pk],$notifProject->firstArmId);
+            $recordsObject = new \Records;
+            $recordsObject->saveData($notifProjectID, 'array', [$saveData[$notifProject->table_pk] => [$notifProject->firstEventId => $saveData]],$overwrite);
+            if (method_exists($recordsObject,'addRecordToRecordListCache')) {
+                $recordsObject->addRecordToRecordListCache($notifProjectID, $saveData[$notifProject->table_pk], $notifProject->firstArmId);
+            }
         }
     }
     $existingNotifs = $module->getNotifications($notifProjectID,$projectID);
