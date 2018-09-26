@@ -140,8 +140,8 @@ echo $returnHTML;
 <script>
     var projectFormList = {};
     <?php
-        foreach (array_keys($notifProject->forms) as $key) {
-            echo "projectFormList['$key'] = '".cleanJavaString($notifProject->forms[$key]['menu'])."';";
+        foreach (array_keys($sourceProject->forms) as $key) {
+            echo "projectFormList['$key'] = '".cleanJavaString($sourceProject->forms[$key]['menu'])."';";
         }
     ?>
     var projectFieldList = {};
@@ -245,7 +245,7 @@ echo $returnHTML;
 
     function generateFieldList() {
         var count = getNewCount('fields_');
-        var returnHTML = "<div id='fields_"+count+"'><table style='border: 1px solid'><tr style='background-color:lightblue;'><td><button type='button' onclick='removeDiv(\"fields_"+count+"\");'>X</button></td><td><div style='padding:3px;'><span>Field Name to Trigger Notification: </span><span><select onchange='loadFieldOptions(this,\"field_options_"+count+"\",\"<?=$recordID?>\",\""+count+"\");' id='<?= $module::FIELD_NAME_SETTING ?>_"+count+"' name='<?= $module::FIELD_NAME_SETTING ?>[]'><option value=''></option>";
+        var returnHTML = "<div id='fields_"+count+"'><table style='border: 1px solid'><tr style='background-color:lightblue;'><td><button type='button' onclick='removeDiv(\"fields_"+count+"\");'>X</button></td><td><div style='padding:3px;'><span>Field Name to Trigger Notification: </span><span><select style='width:350px;text-overflow: ellipsis;' onchange='loadFieldOptions(this,\"field_options_"+count+"\",\"<?=$recordID?>\",\""+count+"\");' id='<?= $module::FIELD_NAME_SETTING ?>_"+count+"' name='<?= $module::FIELD_NAME_SETTING ?>[]'><option value=''></option>";
         for (var key in projectFieldList) {
             returnHTML += "<option value='"+key+"'>("+key+") -- "+projectFieldList[key]+"</option>";
         }
@@ -256,7 +256,7 @@ echo $returnHTML;
 
     function generateFormList() {
         var count = getNewCount('forms_');
-        var returnHTML = "<div id='forms_"+count+"'><table style='border: 1px solid'><tr><td><button type='button' onclick='removeDiv(\"forms_"+count+"\");'>X</button></td><td style='background-color:lightblue;'><span>Form to Monitor for New Fields (leave blank to monitor all forms): </span></td><td><span><select id='<?= $module::FORM_NAME_SETTING ?>_"+count+"' name='<?= $module::FORM_NAME_SETTING ?>[]'><option value=''></option>";
+        var returnHTML = "<div id='forms_"+count+"'><table style='border: 1px solid'><tr><td><button type='button' onclick='removeDiv(\"forms_"+count+"\");'>X</button></td><td style='background-color:lightblue;'><span>Form to Monitor for New Fields (leave blank to monitor all forms): </span></td><td><span><select style='width:350px;text-overflow: ellipsis;' id='<?= $module::FORM_NAME_SETTING ?>_"+count+"' name='<?= $module::FORM_NAME_SETTING ?>[]'><option value=''></option>";
 
         for (var key in projectFormList) {
             returnHTML += "<option value='"+key+"'>"+projectFormList[key]+"</option>";
