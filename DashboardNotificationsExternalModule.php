@@ -24,12 +24,21 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
     private $notificationProject;
     const PROJ_PROD_SETTING = "project_production";
     const FORM_NAME_SETTING = "form_names";
+    const FORM_FIELD_SETTING = "forms_field";
     const FIELD_NAME_SETTING = "field_names";
     const FIELD_VALUE_SETTING = "field_value";
     const USER_NEW_SETTING = "user_new";
     const USER_EDIT_SETTING = "user_edit";
     const PASTDUE_SETTING = "past_due";
     const RECORD_COUNT_SETTING = "record_count";
+
+    const ROLES_LIST = "roles_list";
+    const ROLES_FIELDS = "roles_fields";
+    const ROLES_RESOLVE = "resolve";
+    const ROLES_RECEIVE = "receive";
+
+    const BASE_URL = APP_PATH_WEBROOT_FULL."redcap_".REDCAP_VERSION;
+
 
     private $notificationTypes = [
         "Create record"                     => [0, 5, 6, 7],
@@ -161,6 +170,13 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             $rawToLabel[$key] = $value;
         }
         return $rawToLabel;
+    }
+
+    function cleanArray($array) {
+        foreach ($array as $key => $value) {
+            $array[db_real_escape_string($key)] = db_real_escape_string($value);
+        }
+        return $array;
     }
 
     /**

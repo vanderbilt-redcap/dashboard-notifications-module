@@ -36,8 +36,10 @@ if ($projectID != "" && $notifProjectID != "") {
             $saveData[$module->getProjectSetting("notif-class")] = db_real_escape_string($_POST[$module->getProjectSetting("notif-class")]);
             $saveData[$module->getProjectSetting("notif-type")] = $notifType;
             $saveData[$module->getProjectSetting("notif-active")] = db_real_escape_string($_POST[$module->getProjectSetting("notif-active")]);
-            $saveData[$module->getProjectSetting("role-list")] = db_real_escape_string(implode(",",$_POST[$module->getProjectSetting("role-list")]));
-            $saveData[$module->getProjectSetting("role-resolve")] = db_real_escape_string(implode(",",$_POST[$module->getProjectSetting("role-resolve")]));
+            //$saveData[$module->getProjectSetting("role-list")] = db_real_escape_string(implode(",",$_POST[$module->getProjectSetting("role-list")]));
+            //$saveData[$module->getProjectSetting("role-resolve")] = db_real_escape_string(implode(",",$_POST[$module->getProjectSetting("role-resolve")]));
+            $saveData[$module->getProjectSetting("role-list")] = json_encode(array("roles"=>$module->cleanArray(array_values($_POST[$module::ROLES_RECEIVE."_".$module::ROLES_LIST])),"fields"=>$module->cleanArray(array_values($_POST[$module::ROLES_RECEIVE]))));
+            $saveData[$module->getProjectSetting("role-resolve")] = json_encode(array("roles"=>$module->cleanArray(array_values($_POST[$module::ROLES_RESOLVE."_".$module::ROLES_LIST])),"fields"=>$module->cleanArray(array_values($_POST[$module::ROLES_RESOLVE]))));
             $notifSettings = array();
             switch ($notifType) {
                 case "0":
@@ -47,7 +49,7 @@ if ($projectID != "" && $notifProjectID != "") {
                     break;
                 case "2":
                     foreach ($_POST[$module::FORM_NAME_SETTING] as $index => $formName) {
-                        $notifSettings['forms_field'][$index] = db_real_escape_string($formName);
+                        $notifSettings[$module::FORM_FIELD_SETTING][$index] = db_real_escape_string($formName);
                     }
                     $notifSettings[$module::PROJ_PROD_SETTING] = db_real_escape_string($_POST[$module::PROJ_PROD_SETTING]);
                     break;
@@ -86,6 +88,9 @@ if ($projectID != "" && $notifProjectID != "") {
             }
             $notifSettings[$module::PASTDUE_SETTING] = db_real_escape_string($_POST[$module::PASTDUE_SETTING]);
             $saveData[$module->getProjectSetting("access-json")] = json_encode($notifSettings);
+            /*echo "<pre>";
+            print_r($saveData);
+            echo "</pre>";*/
             $recordsObject = new \Records;
             $recordsObject->saveData($notifProjectID, 'array', [$saveData[$notifProject->table_pk] => [$notifProject->firstEventId => $saveData]],$overwrite);
             if (method_exists($recordsObject,'addRecordToRecordListCache')) {
