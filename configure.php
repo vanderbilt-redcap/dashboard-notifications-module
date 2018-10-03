@@ -5,6 +5,7 @@
  * Date: 8/20/2018
  * Time: 2:59 PM
  */
+
 include_once('base.php');
 require_once APP_PATH_DOCROOT . 'ProjectGeneral/header.php';
 $projectID = $_GET['pid'];
@@ -119,6 +120,8 @@ if ($projectID != "" && $notifProjectID != "") {
         </form>
     </div>";
  ?>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.min.js"></script>
     <style>
         #notif_container {
             display:inline-block;

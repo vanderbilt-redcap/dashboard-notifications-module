@@ -68,14 +68,14 @@ if (isset($_POST['notif_record']) && isset($_POST['new_name']) && is_numeric($pr
     if ($_POST['new_name'] != "") $notifName = db_real_escape_string($_POST['new_name']);
     $returnHTML .= "<div style='padding: 3px;background-color:lightgreen;border:1px solid;'>Notification Name: <input name='".$module->getProjectSetting("notif-name")."' id='".$module->getProjectSetting("notif-name")."' type='text' value='".$notifName."' /></div>
                 <div style='padding: 3px;background-color:lightgreen;border:1px solid;'><span style='display:inline-block;'>Active Notification?</span><span style='display:inline-block;'><input name='".$module->getProjectSetting("notif-active")."' type='radio' value='0' ".($notifActive == "0" ? "checked" : "")."/>No<br/><input name='".$module->getProjectSetting("notif-active")."' type='radio' value='1' ".($notifActive == "1" ? "checked" : "")."/>Yes</span></div>
-                <div style='padding: 3px;background-color:lightgreen;border:1px solid;'>Notification Type: <select onchange='populateUserFields(\"".$module::ROLES_RECEIVE."\",\"".$module::ROLES_RECEIVE."_".$module::ROLES_FIELDS."\");populateUserFields(\"".$module::ROLES_RESOLVE."\",\"".$module::ROLES_RESOLVE."_".$module::ROLES_FIELDS."\");populateNotifSettings(this.options[this.selectedIndex].value, \"notif_settings\");' name='".$module->getProjectSetting("notif-type")."' id='".$module->getProjectSetting("notif-type")."'>";
+                <div style='padding: 3px;background-color:lightgreen;border:1px solid;'>Notification Type: <select class='select2-drop' onchange='populateUserFields(\"".$module::ROLES_RECEIVE."\",\"".$module::ROLES_RECEIVE."_".$module::ROLES_FIELDS."\");populateUserFields(\"".$module::ROLES_RESOLVE."\",\"".$module::ROLES_RESOLVE."_".$module::ROLES_FIELDS."\");populateNotifSettings(this.options[this.selectedIndex].value, \"notif_settings\");' name='".$module->getProjectSetting("notif-type")."' id='".$module->getProjectSetting("notif-type")."'>";
     $notifTypeChoices = $module->getChoicesFromMetaData($notifMetaData[$module->getProjectSetting("notif-type")]['element_enum']);
     //$roleListChoices = getChoicesFromMetaData($notifMetaData[$module->getProjectSetting("role-list")]['element_enum']);
     foreach ($notifTypeChoices as $raw => $label) {
         $returnHTML .= "<option value='$raw' ".($notifType == $raw ? "selected=\"selected\"" : "").">$label</option>";
     }
     $returnHTML .= "</select></div>
-    <div style='padding: 3px;background-color:lightgreen;border:1px solid;'>Notification Classification: <select name='".$module->getProjectSetting("notif-class")."' id='".$module->getProjectSetting("notif-class")."'>";
+    <div style='padding: 3px;background-color:lightgreen;border:1px solid;'>Notification Classification: <select class='select2-drop' name='".$module->getProjectSetting("notif-class")."' id='".$module->getProjectSetting("notif-class")."'>";
     $notifClassChoice = $module->getChoicesFromMetaData($notifMetaData[$module->getProjectSetting("notif-class")]['element_enum']);
     foreach ($notifClassChoice as $raw => $label) {
         $returnHTML .= "<option value='$raw' ".($notifClass == $raw ? "selected=\"selected\"" : "").">$label</option>";
@@ -148,7 +148,6 @@ echo $returnHTML;
         padding-right:5px;
     }
 </style>
-
 <script>
     var projectFormList = {};
     <?php
@@ -267,7 +266,7 @@ echo $returnHTML;
 
     function generateFieldList(fieldListID, selectFieldID, fieldOptionsID, fieldOptionsRequired, fieldLabel) {
         var count = getNewCount(fieldListID);
-        var returnHTML = "<div id='"+fieldListID+count+"'><table style='border: 1px solid'><tr style='background-color:lightblue;'><td><button type='button' onclick='removeDiv(\""+fieldListID+count+"\");'>X</button></td><td><div style='padding:3px;'><span>"+fieldLabel+"</span><span><select style='width:350px;text-overflow: ellipsis;' ";
+        var returnHTML = "<div id='"+fieldListID+count+"'><table style='border: 1px solid'><tr style='background-color:lightblue;'><td><button type='button' onclick='removeDiv(\""+fieldListID+count+"\");'>X</button></td><td><div style='padding:3px;'><span>"+fieldLabel+"</span><span><select class='select2-drop' style='width:350px;text-overflow: ellipsis;' ";
         if (fieldOptionsRequired) {
             returnHTML += "onchange = 'loadFieldOptions(this,\""+fieldOptionsID+count+"\",\"<?=$recordID?>\",\""+count+"\");' ";
         }
@@ -286,7 +285,7 @@ echo $returnHTML;
 
     function generateFormList() {
         var count = getNewCount('forms_');
-        var returnHTML = "<div id='forms_"+count+"'><table style='border: 1px solid'><tr><td><button type='button' onclick='removeDiv(\"forms_"+count+"\");'>X</button></td><td style='background-color:lightblue;'><span>Form to Monitor for New Fields (leave blank to monitor all forms): </span></td><td><span><select style='width:350px;text-overflow: ellipsis;' id='<?= $module::FORM_NAME_SETTING ?>_"+count+"' name='<?= $module::FORM_NAME_SETTING ?>[]'><option value=''></option>";
+        var returnHTML = "<div id='forms_"+count+"'><table style='border: 1px solid'><tr><td><button type='button' onclick='removeDiv(\"forms_"+count+"\");'>X</button></td><td style='background-color:lightblue;'><span>Form to Monitor for New Fields (leave blank to monitor all forms): </span></td><td><span><select class='select2-drop' style='width:350px;text-overflow: ellipsis;' id='<?= $module::FORM_NAME_SETTING ?>_"+count+"' name='<?= $module::FORM_NAME_SETTING ?>[]'><option value=''></option>";
 
         for (var key in projectFormList) {
             returnHTML += "<option value='"+key+"'>"+projectFormList[key]+"</option>";
@@ -297,10 +296,15 @@ echo $returnHTML;
 
     function addNewDiv(destination,functionCallback) {
         $('#'+destination).append(functionCallback());
+        convertSelect2();
     }
 
     function removeDiv(divID) {
         $('#'+divID).remove();
+    }
+
+    function convertSelect2() {
+        $('.select2-drop').select2();
     }
 
     function getNewCount(idToCheck) {
