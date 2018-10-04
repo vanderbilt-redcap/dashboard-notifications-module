@@ -8,6 +8,12 @@
 
 include_once('base.php');
 require_once APP_PATH_DOCROOT . 'ProjectGeneral/header.php';
+?>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.min.js"></script>
+
+<?php
 $projectID = $_GET['pid'];
 $notifProjectID = $module->getProjectSetting("notif-project");
 if ($projectID != "" && $notifProjectID != "") {
@@ -120,8 +126,6 @@ if ($projectID != "" && $notifProjectID != "") {
         </form>
     </div>";
  ?>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.min.js"></script>
     <style>
         #notif_container {
             display:inline-block;
