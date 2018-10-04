@@ -107,17 +107,17 @@ if ($projectID != "" && $notifProjectID != "") {
     }
     $existingNotifs = $module->getNotifications($notifProjectID,$projectID);
 
-    echo "<div class='col-md-12'>
+    echo "<div class='col-md-12' style='padding:0;'>
         <form method='post' action='".$module->getUrl('configure.php')."'>
-            <div id='notif_container' class='col-md-2 bg-info' style='min-width:150px;padding:10px;'>
+            <div id='notif_container' class='col-md-2 bg-info' style='padding:10px;'>
                 <div style='font-weight:bold;border-bottom:4px solid;'>Select or Create a New Notification</div>
                 <div>
                     Select a Notification<br/>
-                    <select id='notif_select' onchange='hideShowNewNotif(this,\"new_role\");' style='width:125px;text-overflow: ellipsis;'></select>
+                    <select id='notif_select' onchange='hideShowNewNotif(this,\"new_role\");' style='width:80%;text-overflow: ellipsis;'></select>
                 </div>
                 <div id='new_role' style='display:none;'>
                     Name for New Notifcation<br/>
-                    <input style='width:125px;' type='text' id='new_notif_name'/>
+                    <input style='width:80%;' type='text' id='new_notif_name'/>
                 </div>
                 <div><button id='submit_role' type='button' onclick='loadRole(\"notif_select\",\"new_notif_name\",\"notif_information\");'>Apply</button></div>
             </div>
