@@ -67,7 +67,7 @@ if (isset($_POST['notif_record']) && isset($_POST['new_name']) && is_numeric($pr
 
     if ($_POST['new_name'] != "") $notifName = db_real_escape_string($_POST['new_name']);
     $returnHTML .= "<div style='padding: 3px;background-color:lightgreen;border:1px solid;'>Notification Name: <input name='".$module->getProjectSetting("notif-name")."' id='".$module->getProjectSetting("notif-name")."' type='text' value='".$notifName."' /></div>
-                <div style='padding: 3px;background-color:lightgreen;border:1px solid;'><span style='display:inline-block;'>Active Notification?</span><span style='display:inline-block;'><input name='".$module->getProjectSetting("notif-active")."' type='radio' value='0' ".($notifActive == "0" ? "checked" : "")."/>No<br/><input name='".$module->getProjectSetting("notif-active")."' type='radio' value='1' ".($notifActive == "1" ? "checked" : "")."/>Yes</span></div>
+                <div style='padding: 3px;background-color:lightgreen;border:1px solid;'><span class='notif' style='display:inline-block;'>Active Notification?</span><span class='notif' style='display:inline-block;'><input name='".$module->getProjectSetting("notif-active")."' type='radio' value='0' ".($notifActive == "0" ? "checked" : "")."/>No<br/><input name='".$module->getProjectSetting("notif-active")."' type='radio' value='1' ".($notifActive == "1" ? "checked" : "")."/>Yes</span></div>
                 <div style='padding: 3px;background-color:lightgreen;border:1px solid;'>Notification Type: <select class='select2-drop' onchange='populateUserFields(\"".$module::ROLES_RECEIVE."\",\"".$module::ROLES_RECEIVE."_".$module::ROLES_FIELDS."\");populateUserFields(\"".$module::ROLES_RESOLVE."\",\"".$module::ROLES_RESOLVE."_".$module::ROLES_FIELDS."\");populateNotifSettings(this.options[this.selectedIndex].value, \"notif_settings\");' name='".$module->getProjectSetting("notif-type")."' id='".$module->getProjectSetting("notif-type")."'>";
     $notifTypeChoices = $module->getChoicesFromMetaData($notifMetaData[$module->getProjectSetting("notif-type")]['element_enum']);
     //$roleListChoices = getChoicesFromMetaData($notifMetaData[$module->getProjectSetting("role-list")]['element_enum']);
@@ -87,7 +87,7 @@ if (isset($_POST['notif_record']) && isset($_POST['new_name']) && is_numeric($pr
         <table><tr>";
         $roleCheckCount = 1;
         foreach ($userRoles as $roleID => $roleData) {
-            $returnHTML .= "<td><span><input type='checkbox' id='".$module::ROLES_RECEIVE."_".$module::ROLES_LIST."_$roleID' name='".$module::ROLES_RECEIVE."_".$module::ROLES_LIST."[]' value='$roleID' ".(in_array($roleID,$roleList) ? "checked" : "")." /></span><span>".$roleData['role_name']."</span></td>";
+            $returnHTML .= "<td><span class='notif'><input type='checkbox' id='".$module::ROLES_RECEIVE."_".$module::ROLES_LIST."_$roleID' name='".$module::ROLES_RECEIVE."_".$module::ROLES_LIST."[]' value='$roleID' ".(in_array($roleID,$roleList) ? "checked" : "")." /></span><span class='notif'>".$roleData['role_name']."</span></td>";
             if ($roleCheckCount % 3 == 0) {
                 $returnHTML .= "</tr><tr>";
                 $roleCheckCount = 1;
@@ -105,7 +105,7 @@ if (isset($_POST['notif_record']) && isset($_POST['new_name']) && is_numeric($pr
         <table><tr>";
     $roleCheckCount = 1;
     foreach ($userRoles as $roleID => $roleData) {
-        $returnHTML .= "<td><span><input type='checkbox' id='".$module::ROLES_RESOLVE."_".$module::ROLES_LIST."_$roleID' name='".$module::ROLES_RESOLVE."_".$module::ROLES_LIST."[]' value='$roleID' ".(in_array($roleID,$roleResolve) ? "checked" : "")." /></span><span>".$roleData['role_name']."</span></td>";
+        $returnHTML .= "<td><span class='notif'><input type='checkbox' id='".$module::ROLES_RESOLVE."_".$module::ROLES_LIST."_$roleID' name='".$module::ROLES_RESOLVE."_".$module::ROLES_LIST."[]' value='$roleID' ".(in_array($roleID,$roleResolve) ? "checked" : "")." /></span><span class='notif'>".$roleData['role_name']."</span></td>";
         if ($roleCheckCount % 3 == 0) {
             $returnHTML .= "</tr><tr>";
             $roleCheckCount = 1;
@@ -144,7 +144,7 @@ echo $returnHTML;
         padding:3px;
     }
 
-    span {
+    span.notif {
         padding-right:5px;
     }
 </style>
@@ -206,7 +206,7 @@ echo $returnHTML;
             divHTML = generateFieldList('fields_','<?= $module::FIELD_NAME_SETTING ?>','field_options',true,'Field Name to Trigger Notification: ');
         }
         else if (selectValue == "4") {
-            divHTML = "<div class='col-md-12'><span><input type='checkbox' name='<?= $module::USER_NEW_SETTING ?>' value='1' <?= ($notifSettings[$module::USER_NEW_SETTING] == "1" ? "checked" : "") ?> /></span><span>Trigger notification when a new user is added to the project</span></div><div class='col-md-12'><span><input type='checkbox' name='<?= $module::USER_EDIT_SETTING ?>' value='1' <?= ($notifSettings[$module::USER_EDIT_SETTING] == "1" ? "checked" : "") ?> /></span><span>Trigger notification when a user's rights are edited</span></div>";
+            divHTML = "<div class='col-md-12'><span class='notif'><input type='checkbox' name='<?= $module::USER_NEW_SETTING ?>' value='1' <?= ($notifSettings[$module::USER_NEW_SETTING] == "1" ? "checked" : "") ?> /></span><span class='notif'>Trigger notification when a new user is added to the project</span></div><div class='col-md-12'><span class='notif'><input type='checkbox' name='<?= $module::USER_EDIT_SETTING ?>' value='1' <?= ($notifSettings[$module::USER_EDIT_SETTING] == "1" ? "checked" : "") ?> /></span><span class='notif'>Trigger notification when a user's rights are edited</span></div>";
         }
         else if (selectValue == "5") {
             divHTML = generateRepeatableFieldList('field_repeat','fields_','<?= $module::FIELD_NAME_SETTING ?>','field_options',true,'Field Name to Trigger Notification: ');
@@ -216,9 +216,9 @@ echo $returnHTML;
         }
         else if (selectValue == "7") {
             divHTML = generateRepeatableFieldList('field_repeat','fields_','<?= $module::FIELD_NAME_SETTING ?>','field_options',true,'Field Name to Trigger Notification: ');
-            divHTML += "<div class='col-md-12' id='<?= $module::RECORD_COUNT_SETTING ?>' style='padding-top:10px;'><span style='display:inline-block;'>Records to Match to Trigger Notification</span><span style='display:inline-block;'><input type='text' name='record_count' value='<?= $notifSettings['record_count'] ?>' /></span></div>";
+            divHTML += "<div class='col-md-12' id='<?= $module::RECORD_COUNT_SETTING ?>' style='padding-top:10px;'><span class='notif' style='display:inline-block;'>Records to Match to Trigger Notification</span><span class='notif' style='display:inline-block;'><input type='text' name='record_count' value='<?= $notifSettings['record_count'] ?>' /></span></div>";
         }
-        divHTML += "<div class='col-md-12' style='padding-top:10px;'><span style='display:inline-block;'>Days Until Notification is Past Due (leave blank if not applicable)</span><span style='display:inline-block;'><input type='text' id='<?= $module::PASTDUE_SETTING ?>' name='<?= $module::PASTDUE_SETTING ?>' /></span></div>";
+        divHTML += "<div class='col-md-12' style='padding-top:10px;'><span class='notif' style='display:inline-block;'>Days Until Notification is Past Due (leave blank if not applicable)</span><span class='notif' style='display:inline-block;'><input type='text' id='<?= $module::PASTDUE_SETTING ?>' name='<?= $module::PASTDUE_SETTING ?>' /></span></div>";
         $('#'+destination).html(divHTML).css({'width':'auto','height':'auto'});
         loadNotifSettings();
     }
@@ -230,13 +230,13 @@ echo $returnHTML;
         if (Object.keys(fieldValueList[nameValue]).length > 0) {
             returnHTML += "<table><tr>";
             for (var key in fieldValueList[nameValue]) {
-                returnHTML += "<td><span><input type='checkbox' id='<?= $module::FIELD_VALUE_SETTING ?>_"+count+"_"+fieldValueCount+"' name='<?= $module::FIELD_VALUE_SETTING ?>_"+count+"[]' value='"+key+"' ";
+                returnHTML += "<td><span class='notif'><input type='checkbox' id='<?= $module::FIELD_VALUE_SETTING ?>_"+count+"_"+fieldValueCount+"' name='<?= $module::FIELD_VALUE_SETTING ?>_"+count+"[]' value='"+key+"' ";
                 if (notificationSettings != null && jQuery.type(notificationSettings['<?= $module::FIELD_VALUE_SETTING ?>']) !== "undefined") {
                     if ($.inArray(key, notificationSettings['<?= $module::FIELD_VALUE_SETTING ?>'][count]) !== -1) {
                         returnHTML += "checked";
                     }
                 }
-                returnHTML += "/></span><span>"+fieldValueList[nameValue][key]+"</span></td>"
+                returnHTML += "/></span><span class='notif'>"+fieldValueList[nameValue][key]+"</span></td>"
                 fieldValueCount++;
                 if (fieldValueCount % 3 == 0) {
                     returnHTML += "</tr><tr>";
@@ -245,7 +245,7 @@ echo $returnHTML;
             returnHTML += "</tr></table>";
         }
         else {
-            returnHTML += "<span><input type='text' id='<?= $module::FIELD_VALUE_SETTING ?>_"+count+"_"+fieldValueCount+"' name='<?= $module::FIELD_VALUE_SETTING ?>_"+count+"' ";
+            returnHTML += "<span class='notif'><input type='text' id='<?= $module::FIELD_VALUE_SETTING ?>_"+count+"_"+fieldValueCount+"' name='<?= $module::FIELD_VALUE_SETTING ?>_"+count+"' ";
             if (notificationSettings != null && jQuery.type(notificationSettings['<?= $module::FIELD_VALUE_SETTING ?>']) !== "undefined") {
                 if ("0" in notificationSettings['<?= $module::FIELD_VALUE_SETTING ?>'][count]) {
                     returnHTML += "value='" + notificationSettings['<?= $module::FIELD_VALUE_SETTING ?>'][count]["0"] + "'";
@@ -266,7 +266,7 @@ echo $returnHTML;
 
     function generateFieldList(fieldListID, selectFieldID, fieldOptionsID, fieldOptionsRequired, fieldLabel) {
         var count = getNewCount(fieldListID);
-        var returnHTML = "<div id='"+fieldListID+count+"'><table style='border: 1px solid'><tr style='background-color:lightblue;'><td><button type='button' onclick='removeDiv(\""+fieldListID+count+"\");'>X</button></td><td><div style='padding:3px;'><span>"+fieldLabel+"</span><span><select class='select2-drop' style='width:350px;text-overflow: ellipsis;' ";
+        var returnHTML = "<div id='"+fieldListID+count+"'><table style='border: 1px solid'><tr style='background-color:lightblue;'><td><button type='button' onclick='removeDiv(\""+fieldListID+count+"\");'>X</button></td><td><div style='padding:3px;'><span class='notif'>"+fieldLabel+"</span><span class='notif'><select class='select2-drop' style='width:350px;text-overflow: ellipsis;' ";
         if (fieldOptionsRequired) {
             returnHTML += "onchange = 'loadFieldOptions(this,\""+fieldOptionsID+count+"\",\"<?=$recordID?>\",\""+count+"\");' ";
         }
@@ -285,7 +285,7 @@ echo $returnHTML;
 
     function generateFormList() {
         var count = getNewCount('forms_');
-        var returnHTML = "<div id='forms_"+count+"'><table style='border: 1px solid'><tr><td><button type='button' onclick='removeDiv(\"forms_"+count+"\");'>X</button></td><td style='background-color:lightblue;'><span>Form to Monitor for New Fields (leave blank to monitor all forms): </span></td><td><span><select class='select2-drop' style='width:350px;text-overflow: ellipsis;' id='<?= $module::FORM_NAME_SETTING ?>_"+count+"' name='<?= $module::FORM_NAME_SETTING ?>[]'><option value=''></option>";
+        var returnHTML = "<div id='forms_"+count+"'><table style='border: 1px solid'><tr><td><button type='button' onclick='removeDiv(\"forms_"+count+"\");'>X</button></td><td style='background-color:lightblue;'><span class='notif'>Form to Monitor for New Fields (leave blank to monitor all forms): </span></td><td><span class='notif'><select class='select2-drop' style='width:350px;text-overflow: ellipsis;' id='<?= $module::FORM_NAME_SETTING ?>_"+count+"' name='<?= $module::FORM_NAME_SETTING ?>[]'><option value=''></option>";
 
         for (var key in projectFormList) {
             returnHTML += "<option value='"+key+"'>"+projectFormList[key]+"</option>";
