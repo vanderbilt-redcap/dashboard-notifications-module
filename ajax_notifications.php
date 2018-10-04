@@ -363,6 +363,7 @@ echo $returnHTML;
 
     $(document).ready(function() {
         $('#<?=$module->getProjectSetting("notif-type")?>').change();
+        convertSelect2();
         //loadNotifSettings();
     });
 </script>
