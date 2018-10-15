@@ -221,6 +221,7 @@ echo $returnHTML;
         divHTML += "<div class='col-md-12' style='padding-top:10px;'><span class='notif' style='display:inline-block;'>Days Until Notification is Past Due (leave blank if not applicable)</span><span class='notif' style='display:inline-block;'><input type='text' id='<?= $module::PASTDUE_SETTING ?>' name='<?= $module::PASTDUE_SETTING ?>' /></span></div>";
         $('#'+destination).html(divHTML).css({'width':'auto','height':'auto'});
         loadNotifSettings();
+        convertSelect2();
     }
     function loadFieldOptions(select_field, destination, record_id, count) {
         var nameValue = select_field.value;

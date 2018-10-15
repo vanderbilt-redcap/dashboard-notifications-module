@@ -148,6 +148,7 @@ if ($projectID != "" && $notifProjectID != "") {
 
     <script>
         $(document).ready(function (){
+            $('#notif_select').append($('<option></option>').attr('value','new').text('New Notification'));
             <?php
             foreach ($existingNotifs as $recordID => $eventData) {
                 foreach ($eventData as $event_id => $recordData) {
@@ -156,7 +157,7 @@ if ($projectID != "" && $notifProjectID != "") {
                 }
             }
             ?>
-            $('#notif_select').append($('<option></option>').attr('value','new').text('New Notification')).change();
+            $('#notif_select').change();
         });
         function loadRole(notif,newName,destination) {
             var notifValue = $('#'+notif).val();
