@@ -76,6 +76,10 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         return $returnData;
     }
 
+    function returnAsArray($possibleArray) {
+        return array_map('db_real_escape_string', (is_array($possibleArray) ? $possibleArray : ($possibleArray != "" ? array($possibleArray) : array())));
+    }
+
     function getAutoId($projectId,$eventId = "")
     {
         $inTransaction = false;
@@ -302,18 +306,17 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
                     break;
                 case 5: //Field Data Check
                     if (array_key_exists(self::FIELD_NAME_SETTING, $jsonOptions)) {
-                        $this->checkRecordFields($project, $logEntry, $jsonOptions[self::FIELD_NAME_SETTING], function ($recordId, $formName=null, $instance=null) use ($notification, $user) {
+                        $this->checkRecordFields($project, $logEntry, $jsonOptions[self::FIELD_NAME_SETTING], function ($recordId, $formName=null, $instance=null) use ($notification, $user, $pastDue) {
                             $msg = "Record ID: $recordId\nForm Modified: $formName";
                             if ($instance) {
                                 $msg .= "\nInstance: $instance";
                             }
-                            $this->saveNotification($notification, $user, $msg);
+                            $this->saveNotification($notification, $user, $msg, $pastDue);
                         });
                     }
                     break;
                 case 6: //E-signature Required
                     if (array_key_exists(self::FIELD_NAME_SETTING, $jsonOptions) && array_key_exists(self::PASTDUE_SETTING, $jsonOptions)) {
-                        $pastDue = $jsonOptions[self::PASTDUE_SETTING];
                         $this->checkRecordFields($project, $logEntry, $jsonOptions[self::FIELD_NAME_SETTING], function ($recordId, $formName = null, $instance = null) use ($notification, $user, $pastDue) {
                             $this->saveNotification($notification, $user, "Record ID: $recordId\n", $pastDue);
                         });
@@ -330,7 +333,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
                         if ($matched) {
                             $notification->updateDetails(['access-json' => json_encode($jsonOptions)]);
                             if (count($jsonOptions['record_history']) % $jsonOptions[self::RECORD_COUNT_SETTING] === 0) {
-                                $this->saveNotification($notification, $user, "");
+                                $this->saveNotification($notification, $user, "",$pastDue);
                             }
                         }
                     }
@@ -457,7 +460,6 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
                 continue;
             }
         }
-
         if ($repeating) {
             if ((count(array_unique($matches[$eventId])) === 1 && array_pop($matches[$eventId])) &&
                 (count(array_unique($matches['repeat_instances'][$eventId][$formName][$instance])) === 1 && array_pop($matches['repeat_instances'][$eventId][$formName][$instance]))) {
@@ -494,6 +496,12 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
      */
     function checkSingleValue($validValues, $actualValue, $isCheckbox)
     {
+        echo "Valid values:<br/>";
+        echo "<pre>";
+        print_r($validValues);
+        echo "</pre>";
+        echo "Actual values: $actualValue<br/>";
+        echo "Is checkbox?".($isCheckbox ? "true" : "false")."<br/>";
         if ($isCheckbox){
             if (empty($validValues)) {
                 $match = in_array(1, $actualValue);
