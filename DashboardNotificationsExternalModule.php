@@ -26,6 +26,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
     const FORM_NAME_SETTING = "form_names";
     const FORM_FIELD_SETTING = "forms_field";
     const FIELD_NAME_SETTING = "field_names";
+    const FIELD_VALUE_REQUIRED = "field_names_value";
     const FIELD_VALUE_SETTING = "field_value";
     const USER_NEW_SETTING = "user_new";
     const USER_EDIT_SETTING = "user_edit";
@@ -38,7 +39,6 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
     const ROLES_RECEIVE = "receive";
 
     const BASE_URL = APP_PATH_WEBROOT_FULL."redcap_".REDCAP_VERSION;
-
 
     private $notificationTypes = [
         "Create record"                     => [0, 5, 6, 7],
@@ -181,6 +181,22 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             $array[db_real_escape_string($key)] = db_real_escape_string($value);
         }
         return $array;
+    }
+
+    function processRequiredFieldValues($valuesRequired,$postdata) {
+        $fieldValues = "";
+        if (isset($valuesRequired)) {
+            if (!empty($postdata)) {
+                $fieldValues = $postdata;
+            }
+            else {
+                $fieldValues = array(0=>null);
+            }
+        }
+        else {
+            $fieldValues = array();
+        }
+        return $fieldValues;
     }
 
     /**
@@ -438,7 +454,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
 
         $repeating = in_array($formName, $project->getRepeatingFormList());
         if (is_null($instance)) {
-            $instance  = 1;
+            $instance = 1;
         }
         //creates an array that mirrors the structure of REDCap getData, but with booleans for all the field values which indicates which fields matched the provided values to check against
         //Reasoning is to possibly switch the functionality from AND only to OR, so we'd need to preserve all the individual matches
@@ -496,12 +512,6 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
      */
     function checkSingleValue($validValues, $actualValue, $isCheckbox)
     {
-        echo "Valid values:<br/>";
-        echo "<pre>";
-        print_r($validValues);
-        echo "</pre>";
-        echo "Actual values: $actualValue<br/>";
-        echo "Is checkbox?".($isCheckbox ? "true" : "false")."<br/>";
         if ($isCheckbox){
             if (empty($validValues)) {
                 $match = in_array(1, $actualValue);
@@ -524,7 +534,6 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
 
         return $match;
     }
-
 
     /**
      * @param Record $notification

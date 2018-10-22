@@ -184,10 +184,10 @@ echo $returnHTML;
         $('#'+destination).html('');
         var divHTML = "";
         if (userType == 'receive') {
-            divHTML = generateRepeatableFieldList(userType+'_repeat',userType+'_fields_',userType,'field_options',false,'Field Name Containing UserNames: ');;
+            divHTML = generateRepeatableFieldList(userType+'_repeat',userType+'_fields_',userType,'field_options','','Field Name Containing UserNames: ');;
         }
         else if (userType == 'resolve') {
-            divHTML = generateRepeatableFieldList(userType+'_repeat',userType+'_fields_',userType,'field_options',false,'Field Name Containing UserNames: ');;
+            divHTML = generateRepeatableFieldList(userType+'_repeat',userType+'_fields_',userType,'field_options','','Field Name Containing UserNames: ');;
         }
         $('#'+destination).html(divHTML).css({'width':'auto','height':'auto'});
     }
@@ -203,19 +203,19 @@ echo $returnHTML;
             divHTML += "<div style='col-md-12'><div>Trigger notification only if REDCap project is in Production Status</div><div><input type='radio' name='<?= $module::PROJ_PROD_SETTING ?>' value='0' <?= ($notifSettings[$module::PROJ_PROD_SETTING] == "0" ? "checked" : "") ?>>No<br/><input type='radio' name='<?= $module::PROJ_PROD_SETTING ?>' value='1' <?= ($notifSettings[$module::PROJ_PROD_SETTING] == "1" ? "checked" : "") ?>>Yes</div></div>";
         }
         else if (selectValue == "3") {
-            divHTML = generateFieldList('fields_','<?= $module::FIELD_NAME_SETTING ?>','field_options',true,'Field Name to Trigger Notification: ');
+            divHTML = generateFieldList('fields_','<?= $module::FIELD_NAME_SETTING ?>','field_options','<?= $module::FIELD_VALUE_REQUIRED ?>','Field Name to Trigger Notification: ');
         }
         else if (selectValue == "4") {
             divHTML = "<div class='col-md-12'><span class='notif'><input type='checkbox' name='<?= $module::USER_NEW_SETTING ?>' value='1' <?= ($notifSettings[$module::USER_NEW_SETTING] == "1" ? "checked" : "") ?> /></span><span class='notif'>Trigger notification when a new user is added to the project</span></div><div class='col-md-12'><span class='notif'><input type='checkbox' name='<?= $module::USER_EDIT_SETTING ?>' value='1' <?= ($notifSettings[$module::USER_EDIT_SETTING] == "1" ? "checked" : "") ?> /></span><span class='notif'>Trigger notification when a user's rights are edited</span></div>";
         }
         else if (selectValue == "5") {
-            divHTML = generateRepeatableFieldList('field_repeat','fields_','<?= $module::FIELD_NAME_SETTING ?>','field_options',true,'Field Name to Trigger Notification: ');
+            divHTML = generateRepeatableFieldList('field_repeat','fields_','<?= $module::FIELD_NAME_SETTING ?>','field_options','<?= $module::FIELD_VALUE_REQUIRED ?>','Field Name to Trigger Notification: ');
         }
         else if (selectValue == "6") {
-            divHTML = generateRepeatableFieldList('field_repeat','fields_','<?= $module::FIELD_NAME_SETTING ?>','field_options',true,'Field Name to Trigger Notification: ');
+            divHTML = generateRepeatableFieldList('field_repeat','fields_','<?= $module::FIELD_NAME_SETTING ?>','field_options','<?= $module::FIELD_VALUE_REQUIRED ?>','Field Name to Trigger Notification: ');
         }
         else if (selectValue == "7") {
-            divHTML = generateRepeatableFieldList('field_repeat','fields_','<?= $module::FIELD_NAME_SETTING ?>','field_options',true,'Field Name to Trigger Notification: ');
+            divHTML = generateRepeatableFieldList('field_repeat','fields_','<?= $module::FIELD_NAME_SETTING ?>','field_options','<?= $module::FIELD_VALUE_REQUIRED ?>','Field Name to Trigger Notification: ');
             divHTML += "<div class='col-md-12' id='<?= $module::RECORD_COUNT_SETTING ?>' style='padding-top:10px;'><span class='notif' style='display:inline-block;'>Records to Match to Trigger Notification</span><span class='notif' style='display:inline-block;'><input type='text' name='record_count' value='<?= $notifSettings['record_count'] ?>' /></span></div>";
         }
         divHTML += "<div class='col-md-12' style='padding-top:10px;'><span class='notif' style='display:inline-block;'>Days Until Notification is Past Due (leave blank if not applicable)</span><span class='notif' style='display:inline-block;'><input type='text' id='<?= $module::PASTDUE_SETTING ?>' name='<?= $module::PASTDUE_SETTING ?>' /></span></div>";
@@ -258,7 +258,7 @@ echo $returnHTML;
     }
 
     function generateRepeatableFieldList(repeatDivID, fieldListID, selectFieldID, fieldOptionsID, fieldOptionsRequired, fieldLabel) {
-        return "<div class='col-md-11' id='"+repeatDivID+"'>"+generateFieldList(fieldListID,selectFieldID,fieldOptionsID,fieldOptionsRequired,fieldLabel)+"</div><div class='col-md-1'><button id='add_"+repeatDivID+"' onclick='addNewDiv(\""+repeatDivID+"\",function() { return generateFieldList(\""+fieldListID+"\",\""+selectFieldID+"\",\""+fieldOptionsID+"\","+fieldOptionsRequired+",\""+fieldLabel+"\") });' type='button'>Add Field</button></div>";
+        return "<div class='col-md-11' id='"+repeatDivID+"'>"+generateFieldList(fieldListID,selectFieldID,fieldOptionsID,fieldOptionsRequired,fieldLabel)+"</div><div class='col-md-1'><button id='add_"+repeatDivID+"' onclick='addNewDiv(\""+repeatDivID+"\",function() { return generateFieldList(\""+fieldListID+"\",\""+selectFieldID+"\",\""+fieldOptionsID+"\",\""+fieldOptionsRequired+"\",\""+fieldLabel+"\") });' type='button'>Add Field</button></div>";
     }
 
     function generateRepeatableFormList() {
@@ -268,7 +268,7 @@ echo $returnHTML;
     function generateFieldList(fieldListID, selectFieldID, fieldOptionsID, fieldOptionsRequired, fieldLabel) {
         var count = getNewCount(fieldListID);
         var returnHTML = "<div id='"+fieldListID+count+"'><table style='border: 1px solid'><tr style='background-color:lightblue;'><td><button type='button' onclick='removeDiv(\""+fieldListID+count+"\");'>X</button></td><td><div style='padding:3px;'><span class='notif'>"+fieldLabel+"</span><span class='notif'><select class='select2-drop' style='width:350px;text-overflow: ellipsis;' ";
-        if (fieldOptionsRequired) {
+        if (fieldOptionsRequired != "") {
             returnHTML += "onchange = 'loadFieldOptions(this,\""+fieldOptionsID+count+"\",\"<?=$recordID?>\",\""+count+"\");' ";
         }
         returnHTML += "id='"+selectFieldID+"_"+count+"' name='"+selectFieldID+"[]'><option value=''></option>";
@@ -276,9 +276,13 @@ echo $returnHTML;
             returnHTML += "<option value='"+key+"'>("+key+") -- "+projectFieldList[key]+"</option>";
         }
 
-        returnHTML += "</select></span></div></td></tr>";
-        if (fieldOptionsRequired) {
-            returnHTML += "<tr><td></td><td><div id='" + fieldOptionsID + count + "'></div></td></tr>";
+        returnHTML += "</select></span></div></td><td>";
+        if (fieldOptionsRequired != "") {
+            returnHTML += "<input type='checkbox' name='" + fieldOptionsRequired + "_"+count+"' id='" + fieldOptionsRequired + "_"+count+"' value='1' onclick='hideShowNewNotif(this,\""+fieldOptionsID+count+"\")'>Requires specific value";
+        }
+        returnHTML += "</td></tr>";
+        if (fieldOptionsRequired != "") {
+            returnHTML += "<tr><td></td><td><div style='display:none;' id='" + fieldOptionsID + count + "'></div></td><td></td></tr>";
         }
         returnHTML += "</table></div>";
         return returnHTML;
@@ -333,10 +337,14 @@ echo $returnHTML;
                 else {
                     foreach ($fieldValues as $count => $value) {
                         if ($count > 0) {
-                            echo "addNewDiv('field_repeat',function() { return generateFieldList('fields_','".$module::FIELD_NAME_SETTING."','field_options',true,'Field Name to Trigger Notification: ')});";
+                            echo "addNewDiv('field_repeat',function() { return generateFieldList('fields_','".$module::FIELD_NAME_SETTING."','field_options','".$module::FIELD_VALUE_REQUIRED."','Field Name to Trigger Notification: ')});";
                         }
                         echo "$(\"#".$module::FIELD_VALUE_SETTING."_".$index."_".$count."\").val('".$value."');";
                     }
+                }
+                if (!empty($fieldValues)) {
+                    echo "console.log(\"#".$module::FIELD_VALUE_REQUIRED."_".$index."\");";
+                    echo "$(\"#".$module::FIELD_VALUE_REQUIRED."_".$index."\").click();";
                 }
                 $index++;
             }
@@ -348,13 +356,13 @@ echo $returnHTML;
             }
             foreach ($receiveFields as $count => $value) {
                 if ($count > 0) {
-                    echo "addNewDiv('".$module::ROLES_RECEIVE."_repeat',function() { return generateFieldList('".$module::ROLES_RECEIVE."_fields_','".$module::ROLES_RECEIVE."','field_options',false,'Field Name Containing UserNames: ') });";
+                    echo "addNewDiv('".$module::ROLES_RECEIVE."_repeat',function() { return generateFieldList('".$module::ROLES_RECEIVE."_fields_','".$module::ROLES_RECEIVE."','field_options','','Field Name Containing UserNames: ') });";
                 }
                 echo "$(\"#".$module::ROLES_RECEIVE."_".$count."\").val('".$value."');";
             }
             foreach ($resolveFields as $count => $value) {
                 if ($count > 0) {
-                    echo "addNewDiv('".$module::ROLES_RESOLVE."_repeat',function() { return generateFieldList('".$module::ROLES_RESOLVE."_fields_','".$module::ROLES_RESOLVE."','field_options',false,'Field Name Containing UserNames: ') });";
+                    echo "addNewDiv('".$module::ROLES_RESOLVE."_repeat',function() { return generateFieldList('".$module::ROLES_RESOLVE."_fields_','".$module::ROLES_RESOLVE."','field_options','','Field Name Containing UserNames: ') });";
                 }
                 echo "$(\"#".$module::ROLES_RESOLVE."_".$count."\").val('".$value."');";
             }

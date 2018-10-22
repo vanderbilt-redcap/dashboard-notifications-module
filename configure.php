@@ -72,26 +72,29 @@ if ($projectID != "" && $notifProjectID != "") {
                     break;
                 case "5":
                     foreach ($_POST[$module::FIELD_NAME_SETTING] as $index => $fieldName) {
+                        $fieldValues = $module::processRequiredFieldValues($_POST[$module::FIELD_VALUE_REQUIRED."_".$index],$_POST[$module::FIELD_VALUE_SETTING.'_'.$index]);
                         /*$notifSettings[$module::FIELD_NAME_SETTING][$index] = db_real_escape_string($fieldName);
                         $notifSettings[$module::FIELD_VALUE_SETTING][$index] = array_map('db_real_escape_string', (is_array($_POST[$module::FIELD_VALUE_SETTING.'_'.$index]) ? $_POST[$module::FIELD_VALUE_SETTING.'_'.$index] : array($_POST[$module::FIELD_VALUE_SETTING.'_'.$index])));*/
                         //$notifSettings[$module::FIELD_NAME_SETTING][db_real_escape_string($fieldName)] = array_map('db_real_escape_string', (is_array($_POST[$module::FIELD_VALUE_SETTING.'_'.$index]) ? $_POST[$module::FIELD_VALUE_SETTING.'_'.$index] : array($_POST[$module::FIELD_VALUE_SETTING.'_'.$index])));
-                        $notifSettings[$module::FIELD_NAME_SETTING][db_real_escape_string($fieldName)] = $module->returnAsArray($_POST[$module::FIELD_VALUE_SETTING.'_'.$index]);
+                        $notifSettings[$module::FIELD_NAME_SETTING][db_real_escape_string($fieldName)] = $module->returnAsArray($fieldValues);
                     }
                     break;
                 case "6":
                     foreach ($_POST[$module::FIELD_NAME_SETTING] as $index => $fieldName) {
+                        $fieldValues = $module::processRequiredFieldValues($_POST[$module::FIELD_VALUE_REQUIRED."_".$index],$_POST[$module::FIELD_VALUE_SETTING.'_'.$index]);
                         /*$notifSettings[$module::FIELD_NAME_SETTING][$index] = db_real_escape_string($fieldName);
                         $notifSettings[$module::FIELD_VALUE_SETTING][$index] = array_map('db_real_escape_string', (is_array($_POST[$module::FIELD_VALUE_SETTING.'_'.$index]) ? $_POST[$module::FIELD_VALUE_SETTING.'_'.$index] : array($_POST[$module::FIELD_VALUE_SETTING.'_'.$index])));*/
                         //$notifSettings[$module::FIELD_NAME_SETTING][db_real_escape_string($fieldName)] = array_map('db_real_escape_string', (is_array($_POST[$module::FIELD_VALUE_SETTING.'_'.$index]) ? $_POST[$module::FIELD_VALUE_SETTING.'_'.$index] : array($_POST[$module::FIELD_VALUE_SETTING.'_'.$index])));
-                        $notifSettings[$module::FIELD_NAME_SETTING][db_real_escape_string($fieldName)] = $module->returnAsArray($_POST[$module::FIELD_VALUE_SETTING.'_'.$index]);
+                        $notifSettings[$module::FIELD_NAME_SETTING][db_real_escape_string($fieldName)] = $module->returnAsArray($fieldValues);
                     }
                     break;
                 case "7":
                     foreach ($_POST[$module::FIELD_NAME_SETTING] as $index => $fieldName) {
+                        $fieldValues = $module::processRequiredFieldValues($_POST[$module::FIELD_VALUE_REQUIRED."_".$index],$_POST[$module::FIELD_VALUE_SETTING.'_'.$index]);
                         /*$notifSettings[$module::FIELD_NAME_SETTING][$index] = db_real_escape_string($fieldName);
                         $notifSettings[$module::FIELD_VALUE_SETTING][$index] = array_map('db_real_escape_string', (is_array($_POST[$module::FIELD_VALUE_SETTING.'_'.$index]) ? $_POST[$module::FIELD_VALUE_SETTING.'_'.$index] : array($_POST[$module::FIELD_VALUE_SETTING.'_'.$index])));*/
                         //$notifSettings[$module::FIELD_NAME_SETTING][db_real_escape_string($fieldName)] = array_map('db_real_escape_string', (is_array($_POST[$module::FIELD_VALUE_SETTING.'_'.$index]) ? $_POST[$module::FIELD_VALUE_SETTING.'_'.$index] : array($_POST[$module::FIELD_VALUE_SETTING.'_'.$index])));
-                        $notifSettings[$module::FIELD_NAME_SETTING][db_real_escape_string($fieldName)] = $module->returnAsArray($_POST[$module::FIELD_VALUE_SETTING.'_'.$index]);
+                        $notifSettings[$module::FIELD_NAME_SETTING][db_real_escape_string($fieldName)] = $module->returnAsArray($fieldValues);
                     }
                     $notifSettings[$module::RECORD_COUNT_SETTING] = db_real_escape_string($_POST[$module::RECORD_COUNT_SETTING]);
                     break;
@@ -185,11 +188,38 @@ if ($projectID != "" && $notifProjectID != "") {
 
         function hideShowNewNotif(select,target_id) {
             var selectValue = select.value;
-            if (selectValue == 'new') {
+            if (selectValue == 'new' || select.checked) {
                 $('#'+target_id).show();
             }
             else {
-                $('#'+target_id).hide().find('input').val('');
+                $('#'+target_id).hide().find('input').each(function() {
+                    switch(this.type) {
+                        case 'password':
+                            jQuery(this).val('');
+                            break;
+                        case 'text':
+                            jQuery(this).val('');
+                            break;
+                        case 'textarea':
+                            jQuery(this).val('');
+                            break;
+                        case 'file':
+                        case 'select-one':
+                        case 'select-multiple':
+                        case 'date':
+                        case 'number':
+                        case 'tel':
+                        case 'email':
+                            jQuery(this).val('');
+                            break;
+                        case 'checkbox':
+                            this.checked = false;
+                            break;
+                        case 'radio':
+                            this.checked = false;
+                            break;
+                    }
+                });
             }
         }
     </script>
