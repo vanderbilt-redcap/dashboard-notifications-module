@@ -7,9 +7,10 @@
  */
 
 include_once('base.php');
-$projectID = $_GET['pid'];
+$projectID = $_REQUEST['pid'];
 $notifProjectID = $module->getProjectSetting("notif-project");
-$returnHTML = "";
+$notifCount = $_POST['div_count'];
+$returnHTML = "<div id='notification_".$notifCount."'>";
 if (isset($_POST['notif_record']) && isset($_POST['new_name']) && is_numeric($projectID) && is_numeric($notifProjectID)) {
     $recordID = "";
     $notifProject = new \Project($notifProjectID);
@@ -22,13 +23,13 @@ if (isset($_POST['notif_record']) && isset($_POST['new_name']) && is_numeric($pr
     print_r($notifMetaData);
     echo "</pre>";*/
 
+    $repeatProjects = $_POST['repeatable_project'];
     $userRoles = \UserRights::getRoles();
     $notifRecord = db_real_escape_string($_POST['notif_record']);
     $newNotifName = db_real_escape_string($_POST['new_name']);
     if ($notifRecord != 'new' && $newNotifName == "") {
         $recordID = $notifRecord;
     }
-
     if ($recordID != "") {
         try {
             $recordData = \Records::getData($notifProjectID, 'array', array($recordID));
@@ -51,9 +52,9 @@ if (isset($_POST['notif_record']) && isset($_POST['new_name']) && is_numeric($pr
                         $notifClass = $fieldData[$module->getProjectSetting("notif-class")];
                         $receiveData = json_decode($fieldData[$module->getProjectSetting("role-list")],true);
                         $resolveData = json_decode($fieldData[$module->getProjectSetting("role-resolve")],true);
-                        $roleList = $receiveData["roles"];
+                        $roleList = $module->transferRoleIDsBetweenProjects($receiveData["roles"],$projectID);
                         $receiveFields = $receiveData["fields"];
-                        $roleResolve = $resolveData["roles"];
+                        $roleResolve = $module->transferRoleIDsBetweenProjects($resolveData["roles"],$projectID);
                         $resolveFields = $resolveData["fields"];
                         $notifActive = $fieldData[$module->getProjectSetting("notif-active")];
                     }
@@ -66,6 +67,9 @@ if (isset($_POST['notif_record']) && isset($_POST['new_name']) && is_numeric($pr
     }
 
     if ($_POST['new_name'] != "") $notifName = db_real_escape_string($_POST['new_name']);
+    if ($repeatProjects) {
+
+    }
     $returnHTML .= "<div style='padding: 3px;background-color:lightgreen;border:1px solid;'>Notification Name: <input name='".$module->getProjectSetting("notif-name")."' id='".$module->getProjectSetting("notif-name")."' type='text' value='".$notifName."' /></div>
                 <div style='padding: 3px;background-color:lightgreen;border:1px solid;'><span class='notif' style='display:inline-block;'>Active Notification?</span><span class='notif' style='display:inline-block;'><input name='".$module->getProjectSetting("notif-active")."' type='radio' value='0' ".($notifActive == "0" ? "checked" : "")."/>No<br/><input name='".$module->getProjectSetting("notif-active")."' type='radio' value='1' ".($notifActive == "1" ? "checked" : "")."/>Yes</span></div>
                 <div style='padding: 3px;background-color:lightgreen;border:1px solid;'>Notification Type: <select class='select2-drop' onchange='populateUserFields(\"".$module::ROLES_RECEIVE."\",\"".$module::ROLES_RECEIVE."_".$module::ROLES_FIELDS."\");populateUserFields(\"".$module::ROLES_RESOLVE."\",\"".$module::ROLES_RESOLVE."_".$module::ROLES_FIELDS."\");populateNotifSettings(this.options[this.selectedIndex].value, \"notif_settings\");' name='".$module->getProjectSetting("notif-type")."' id='".$module->getProjectSetting("notif-type")."'>";
@@ -126,7 +130,7 @@ if (isset($_POST['notif_record']) && isset($_POST['new_name']) && is_numeric($pr
                 </div>
                 <input type='hidden' value='$recordID' name='".$notifProject->table_pk."'/>";
 }
-
+$returnHTML .= "</div>";
 echo $returnHTML;
 
 /* Parses choices from multiple choice questions in to an array. Raw value -> Label
@@ -325,6 +329,7 @@ echo $returnHTML;
             $index = 0;
             foreach ($notifSettings[$module::FIELD_NAME_SETTING] as $fieldName => $fieldValues) {
                 if ($fieldName == "") continue;
+                if (!in_array($fieldName, array_keys($sourceMetaData))) continue;
                 if ($index > 0) {
                     echo "$('#add_field_repeat').trigger('click');";
                 }
@@ -348,6 +353,7 @@ echo $returnHTML;
                 }
                 $index++;
             }
+            //TODO For each foreach below, need to make sure the form/field exists on this project, keep indexing of loop separate from the actual count in the array
             foreach ($notifSettings[$module::FORM_FIELD_SETTING] as $count => $value) {
                 if ($count > 0) {
                     echo "addNewDiv('form_repeat',generateFormList);";

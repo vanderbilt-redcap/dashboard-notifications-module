@@ -14,103 +14,20 @@ require_once APP_PATH_DOCROOT . 'ProjectGeneral/header.php';
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.min.js"></script>
 
 <?php
-$projectID = $_GET['pid'];
+//TODO Add the POST variable to ajax call below that pulls from a dropdown of notif_class from notification project
+$projectID = $_REQUEST['pid'];
 $notifProjectID = $module->getProjectSetting("notif-project");
 if ($projectID != "" && $notifProjectID != "") {
-    $project = new \Project($projectID);
-    $notifProject = new \Project($notifProjectID);
     /*echo "<pre>";
     print_r($existingNotifs);
     echo "</pre>";*/
     if (!empty($_POST)) {
-        /*echo "<pre>";
-        print_r($_POST);
-        echo "</pre>";*/
-        $overwrite = "overwrite";
-        $recordID = "";
-        if ($_POST['record_id'] != "") {
-            $recordID = db_real_escape_string($_POST[$notifProject->table_pk]);
-        }
-        else {
-            $recordID = $module->getAutoID($notifProjectID,$notifProject->firstEventId);
-        }
-        if ($recordID != "") {
-            $saveData[$notifProject->table_pk] = $recordID;
-            $notifType = db_real_escape_string($_POST[$module->getProjectSetting("notif-type")]);
-            $saveData[$module->getProjectSetting("project-field")] = $projectID;
-            $saveData[$module->getProjectSetting("notif-name")] = db_real_escape_string($_POST[$module->getProjectSetting("notif-name")]);
-            $saveData[$module->getProjectSetting("notif-alert")] = db_real_escape_string($_POST[$module->getProjectSetting("notif-alert")]);
-            $saveData[$module->getProjectSetting("notif-class")] = db_real_escape_string($_POST[$module->getProjectSetting("notif-class")]);
-            $saveData[$module->getProjectSetting("notif-type")] = $notifType;
-            $saveData[$module->getProjectSetting("notif-active")] = db_real_escape_string($_POST[$module->getProjectSetting("notif-active")]);
-            //$saveData[$module->getProjectSetting("role-list")] = db_real_escape_string(implode(",",$_POST[$module->getProjectSetting("role-list")]));
-            //$saveData[$module->getProjectSetting("role-resolve")] = db_real_escape_string(implode(",",$_POST[$module->getProjectSetting("role-resolve")]));
-            $saveData[$module->getProjectSetting("role-list")] = json_encode(array("roles"=>$module->cleanArray(array_values($_POST[$module::ROLES_RECEIVE."_".$module::ROLES_LIST])),"fields"=>$module->cleanArray(array_values($_POST[$module::ROLES_RECEIVE]))));
-            $saveData[$module->getProjectSetting("role-resolve")] = json_encode(array("roles"=>$module->cleanArray(array_values($_POST[$module::ROLES_RESOLVE."_".$module::ROLES_LIST])),"fields"=>$module->cleanArray(array_values($_POST[$module::ROLES_RESOLVE]))));
-            $notifSettings = array();
-            switch ($notifType) {
-                case "0":
-                    break;
-                case "1":
-                    $notifSettings[$module::PROJ_PROD_SETTING] = db_real_escape_string($_POST[$module::PROJ_PROD_SETTING]);
-                    break;
-                case "2":
-                    foreach ($_POST[$module::FORM_NAME_SETTING] as $index => $formName) {
-                        $notifSettings[$module::FORM_FIELD_SETTING][$index] = db_real_escape_string($formName);
-                    }
-                    $notifSettings[$module::PROJ_PROD_SETTING] = db_real_escape_string($_POST[$module::PROJ_PROD_SETTING]);
-                    break;
-                case "3":
-                    foreach ($_POST[$module::FIELD_NAME_SETTING] as $index => $fieldName) {
-                        //$notifSettings[$module::FIELD_NAME_SETTING][$index] = db_real_escape_string($fieldName);
-                        $notifSettings[$module::FIELD_NAME_SETTING][db_real_escape_string($fieldName)] = [];
-                    }
-                    break;
-                case "4":
-                    $notifSettings[$module::USER_NEW_SETTING] = db_real_escape_string($_POST[$module::USER_NEW_SETTING]);
-                    $notifSettings[$module::USER_EDIT_SETTING] = db_real_escape_string($_POST[$module::USER_EDIT_SETTING]);
-                    break;
-                case "5":
-                    foreach ($_POST[$module::FIELD_NAME_SETTING] as $index => $fieldName) {
-                        $fieldValues = $module::processRequiredFieldValues($_POST[$module::FIELD_VALUE_REQUIRED."_".$index],$_POST[$module::FIELD_VALUE_SETTING.'_'.$index]);
-                        /*$notifSettings[$module::FIELD_NAME_SETTING][$index] = db_real_escape_string($fieldName);
-                        $notifSettings[$module::FIELD_VALUE_SETTING][$index] = array_map('db_real_escape_string', (is_array($_POST[$module::FIELD_VALUE_SETTING.'_'.$index]) ? $_POST[$module::FIELD_VALUE_SETTING.'_'.$index] : array($_POST[$module::FIELD_VALUE_SETTING.'_'.$index])));*/
-                        //$notifSettings[$module::FIELD_NAME_SETTING][db_real_escape_string($fieldName)] = array_map('db_real_escape_string', (is_array($_POST[$module::FIELD_VALUE_SETTING.'_'.$index]) ? $_POST[$module::FIELD_VALUE_SETTING.'_'.$index] : array($_POST[$module::FIELD_VALUE_SETTING.'_'.$index])));
-                        $notifSettings[$module::FIELD_NAME_SETTING][db_real_escape_string($fieldName)] = $module->returnAsArray($fieldValues);
-                    }
-                    break;
-                case "6":
-                    foreach ($_POST[$module::FIELD_NAME_SETTING] as $index => $fieldName) {
-                        $fieldValues = $module::processRequiredFieldValues($_POST[$module::FIELD_VALUE_REQUIRED."_".$index],$_POST[$module::FIELD_VALUE_SETTING.'_'.$index]);
-                        /*$notifSettings[$module::FIELD_NAME_SETTING][$index] = db_real_escape_string($fieldName);
-                        $notifSettings[$module::FIELD_VALUE_SETTING][$index] = array_map('db_real_escape_string', (is_array($_POST[$module::FIELD_VALUE_SETTING.'_'.$index]) ? $_POST[$module::FIELD_VALUE_SETTING.'_'.$index] : array($_POST[$module::FIELD_VALUE_SETTING.'_'.$index])));*/
-                        //$notifSettings[$module::FIELD_NAME_SETTING][db_real_escape_string($fieldName)] = array_map('db_real_escape_string', (is_array($_POST[$module::FIELD_VALUE_SETTING.'_'.$index]) ? $_POST[$module::FIELD_VALUE_SETTING.'_'.$index] : array($_POST[$module::FIELD_VALUE_SETTING.'_'.$index])));
-                        $notifSettings[$module::FIELD_NAME_SETTING][db_real_escape_string($fieldName)] = $module->returnAsArray($fieldValues);
-                    }
-                    break;
-                case "7":
-                    foreach ($_POST[$module::FIELD_NAME_SETTING] as $index => $fieldName) {
-                        $fieldValues = $module::processRequiredFieldValues($_POST[$module::FIELD_VALUE_REQUIRED."_".$index],$_POST[$module::FIELD_VALUE_SETTING.'_'.$index]);
-                        /*$notifSettings[$module::FIELD_NAME_SETTING][$index] = db_real_escape_string($fieldName);
-                        $notifSettings[$module::FIELD_VALUE_SETTING][$index] = array_map('db_real_escape_string', (is_array($_POST[$module::FIELD_VALUE_SETTING.'_'.$index]) ? $_POST[$module::FIELD_VALUE_SETTING.'_'.$index] : array($_POST[$module::FIELD_VALUE_SETTING.'_'.$index])));*/
-                        //$notifSettings[$module::FIELD_NAME_SETTING][db_real_escape_string($fieldName)] = array_map('db_real_escape_string', (is_array($_POST[$module::FIELD_VALUE_SETTING.'_'.$index]) ? $_POST[$module::FIELD_VALUE_SETTING.'_'.$index] : array($_POST[$module::FIELD_VALUE_SETTING.'_'.$index])));
-                        $notifSettings[$module::FIELD_NAME_SETTING][db_real_escape_string($fieldName)] = $module->returnAsArray($fieldValues);
-                    }
-                    $notifSettings[$module::RECORD_COUNT_SETTING] = db_real_escape_string($_POST[$module::RECORD_COUNT_SETTING]);
-                    break;
-            }
-            $notifSettings[$module::PASTDUE_SETTING] = db_real_escape_string($_POST[$module::PASTDUE_SETTING]);
-            $saveData[$module->getProjectSetting("access-json")] = json_encode($notifSettings);
-            /*echo "<pre>";
-            print_r($saveData);
-            echo "</pre>";*/
-            $recordsObject = new \Records;
-            $recordsObject->saveData($notifProjectID, 'array', [$saveData[$notifProject->table_pk] => [$notifProject->firstEventId => $saveData]],$overwrite);
-            if (method_exists($recordsObject,'addRecordToRecordListCache')) {
-                $recordsObject->addRecordToRecordListCache($notifProjectID, $saveData[$notifProject->table_pk], $notifProject->firstArmId);
-            }
-        }
+        $module->saveNotifSettings($projectID,$notifProjectID,$_POST);
     }
+
+    $notifProject = new \Project($notifProjectID);
+    $notifMetaData = $notifProject->metadata;
+    $notifClassChoice = $module->getChoicesFromMetaData($notifMetaData[$module->getProjectSetting("notif-class")]['element_enum']);
     $existingNotifs = $module->getNotifications($notifProjectID,$projectID);
 
     echo "<div class='col-md-12' style='padding:0;'>
@@ -125,7 +42,7 @@ if ($projectID != "" && $notifProjectID != "") {
                     Name for New Notifcation<br/>
                     <input style='width:80%;' type='text' id='new_notif_name'/>
                 </div>
-                <div><button id='submit_role' type='button' onclick='loadRole(\"notif_select\",\"new_notif_name\",\"notif_information\");'>Apply</button></div>
+                <div><button id='submit_role' type='button' onclick='loadNotif(\"notif_select\",\"new_notif_name\",\"notif_information\",\"".$projectID."\");'>Apply</button></div>
             </div>
             <div class='col-md-10' id='notif_information' style='display:none;'>
             </div>
@@ -159,13 +76,13 @@ if ($projectID != "" && $notifProjectID != "") {
             foreach ($existingNotifs as $recordID => $eventData) {
                 foreach ($eventData as $event_id => $recordData) {
                     if ($event_id == "repeat_instances") continue;
-                    echo "$('#notif_select').append($('<option></option>').attr('value','".$recordID."').text('".$recordData[$module->getProjectSetting('notif-name')]."'));";
+                    echo "$('#notif_select').append($('<option></option>').attr('value','".$recordID."').text('".$notifClassChoice[$recordData[$module->getProjectSetting('notif-class')]]." - ".$recordData[$module->getProjectSetting('notif-name')]."'));";
                 }
             }
             ?>
             $('#notif_select').change();
         });
-        function loadRole(notif,newName,destination) {
+        function loadNotif(notif,newName,destination,projectid) {
             var notifValue = $('#'+notif).val();
             var nameValue = $('#'+newName).val();
             $.ajax({
@@ -173,7 +90,9 @@ if ($projectID != "" && $notifProjectID != "") {
                 method: 'post',
                 data: {
                     'notif_record': notifValue,
-                    'new_name': nameValue
+                    'new_name': nameValue,
+                    'pid': projectid,
+                    'div_count': '1'
                 },
                 success: function (data) {
                     //console.log(data);
