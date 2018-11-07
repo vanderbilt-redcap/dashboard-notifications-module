@@ -11,7 +11,7 @@ $projectID = $_REQUEST['pid'];
 $notifProjectID = $module->getProjectSetting("notif-project");
 $notifCount = $_POST['div_count'];
 $returnHTML = "<div id='notification_".$notifCount."'>";
-if (isset($_POST['notif_record']) && isset($_POST['new_name']) && is_numeric($projectID) && is_numeric($notifProjectID)) {
+if (isset($_POST['notif_record']) && is_numeric($projectID) && is_numeric($notifProjectID)) {
     $recordID = "";
     $notifProject = new \Project($notifProjectID);
     $sourceProject = new \Project($projectID);
@@ -50,6 +50,7 @@ if (isset($_POST['notif_record']) && isset($_POST['new_name']) && is_numeric($pr
                         $notifType = $fieldData[$module->getProjectSetting("notif-type")];
                         $notifAlert = $fieldData[$module->getProjectSetting("notif-alert")];
                         $notifClass = $fieldData[$module->getProjectSetting("notif-class")];
+                        $notifPriority = $fieldData[$module->getProjectSetting("notif-priority")];
                         $receiveData = json_decode($fieldData[$module->getProjectSetting("role-list")],true);
                         $resolveData = json_decode($fieldData[$module->getProjectSetting("role-resolve")],true);
                         $roleList = $module->transferRoleIDsBetweenProjects($receiveData["roles"],$projectID);
@@ -79,12 +80,18 @@ if (isset($_POST['notif_record']) && isset($_POST['new_name']) && is_numeric($pr
         $returnHTML .= "<option value='$raw' ".($notifType == $raw ? "selected=\"selected\"" : "").">$label</option>";
     }
     $returnHTML .= "</select></div>
-    <div style='padding: 3px;background-color:lightgreen;border:1px solid;'>Notification Classification: <select class='select2-drop' name='".$module->getProjectSetting("notif-class")."' id='".$module->getProjectSetting("notif-class")."'>";
+    <div style='padding: 3px;background-color:lightgreen;border:1px solid;'>Notification Classification: <select style='min-width:125px;' class='select2-drop' name='".$module->getProjectSetting("notif-class")."' id='".$module->getProjectSetting("notif-class")."'>";
     $notifClassChoice = $module->getChoicesFromMetaData($notifMetaData[$module->getProjectSetting("notif-class")]['element_enum']);
     foreach ($notifClassChoice as $raw => $label) {
         $returnHTML .= "<option value='$raw' ".($notifClass == $raw ? "selected=\"selected\"" : "").">$label</option>";
     }
     $returnHTML.= "</select></div>
+        <div style='padding: 3px;background-color:lightgreen;border:1px solid;'>Notification Priority: <select class='select2-drop'name='".$module->getProjectSetting("notif-priority")."' id='".$module->getProjectSetting("notif-priority")."' >";
+    $notifPriorityChoice = $module->getChoicesFromMetaData($notifMetaData[$module->getProjectSetting("notif-priority")]['element_enum']);
+    foreach ($notifPriorityChoice as $raw => $label) {
+        $returnHTML .= "<option value='$raw' ".($notifPriority == $raw ? "selected=\"selected\"" : "").">$label</option>";
+    }
+        $returnHTML .= "</select></div>
         <div style='padding: 3px;background-color:lightgreen;border:1px solid;'><div style='vertical-align:top;'>Notification Alert Text:</div> <textarea rows='5' cols='75' name='".$module->getProjectSetting("notif-alert")."'>$notifAlert</textarea></div>
     <div id='accordion'>
         <div><h3><a style='display:inline-block;padding-left:20px;' href='#'>User Roles to Receive This Notification</a></h3><div>

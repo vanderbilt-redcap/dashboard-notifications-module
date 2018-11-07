@@ -27,14 +27,14 @@ if ($projectID != "" && $notifProjectID != "") {
 
     echo "<div class='col-md-12' style='padding:0;'>
         <form method='post' action='".$module->getUrl('notif_copy.php')."'>
-            <div id='notif_container' class='col-md-12 bg-info' style='padding:10px;'>
+            <div class='col-md-12 bg-info' style='padding:10px;'>
                 <div class='col-md-10'>
                     Select a Notification for Duplication<br/>
-                    <select id='notif_select' style='width:80%;text-overflow: ellipsis;'>";
+                    <select id='notif_select' style='width:90%;text-overflow: ellipsis;'>";
                         foreach ($existingNotifs as $recordID => $eventData) {
                             foreach ($eventData as $event_id => $recordData) {
                                 if ($event_id == "repeat_instances") continue;
-                                echo "$('#notif_select').append($('<option></option>').attr('value','".$recordID."').text('".$notifClassChoice[$recordData[$module->getProjectSetting('notif-class')]]." - ".$recordData[$module->getProjectSetting('notif-name')]."'));";
+                                echo "<option value='$recordID'>".$notifClassChoice[$recordData[$module->getProjectSetting('notif-class')]]." - ".$recordData[$module->getProjectSetting('notif-name')]." -- Project: ".$module->getProjectName($recordData[$module->getProjectSetting('project-field')])."</option>";
                             }
                         }
                     echo "</select>
@@ -72,14 +72,15 @@ if ($projectID != "" && $notifProjectID != "") {
     <script>
         function addNotif(notif,destination,projectid) {
             var notifValue = $('#' + notif).val();
-            var nameValue = $('#' + newName).val();
+            var notifCount = $('div[id^=notification_]').length;
             $.ajax({
                 url: '<?=$module->getUrl('ajax_notifications.php')?>',
                 method: 'post',
                 data: {
                     'notif_record': notifValue,
                     'pid': projectid,
-                    'repeatable_project': 'true'
+                    'repeatable_project': 'true',
+                    'div_count': notifCount
                 },
                 success: function (data) {
                     //console.log(data);

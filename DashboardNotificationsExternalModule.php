@@ -235,6 +235,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             $saveData[$this->getProjectSetting("notif-name")] = db_real_escape_string($postData[$this->getProjectSetting("notif-name")]);
             $saveData[$this->getProjectSetting("notif-alert")] = db_real_escape_string($postData[$this->getProjectSetting("notif-alert")]);
             $saveData[$this->getProjectSetting("notif-class")] = db_real_escape_string($postData[$this->getProjectSetting("notif-class")]);
+            $saveData[$this->getProjectSetting("notif-priority")] = db_real_escape_string($postData[$this->getProjectSetting("notif-priority")]);
             $saveData[$this->getProjectSetting("notif-type")] = $notifType;
             $saveData[$this->getProjectSetting("notif-active")] = db_real_escape_string($postData[$this->getProjectSetting("notif-active")]);
             //$saveData[$this->getProjectSetting("role-list")] = db_real_escape_string(implode(",",$postData[$this->ge@tProjectSetting("role-list")]));
@@ -499,7 +500,6 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
                     }
                     break;
             }
-            //echo "Notification message: $notificationMessage<br/>";
 
             if (!empty($notificationMessage)) {
                 $this->saveNotification($notification, $logEntry['user'], $notificationMessage, $pastDue);

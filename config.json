@@ -26,6 +26,12 @@
         "icon": "report",
         "url": "configure.php",
         "access": "design"
+      },
+      {
+        "name": "Notification Duplicator",
+        "icon": "report",
+        "url": "notif_copy.php",
+        "access": "design"
       }
     ]
   },
@@ -63,6 +69,12 @@
     {
       "key": "notif-class",
       "name": "Field That Stores the Classification of Notification",
+      "type":"text",
+      "repeatable": false
+    },
+    {
+      "key": "notif-priority",
+      "name": "Field That Stores the Priority of Notification",
       "type":"text",
       "repeatable": false
     },
