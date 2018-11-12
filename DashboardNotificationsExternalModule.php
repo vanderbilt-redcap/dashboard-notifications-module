@@ -170,9 +170,9 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
 
     function getChoicesFromMetaData($choicesString) {
         if ($choicesString == "") return "";
-        // 1) split by <br/> or "|" depending on which is used
-        if(strpos($choicesString,'<br/>') !== false)
-            $choicesArray1 = explode('<br/>', $choicesString);
+        // 1) split by \n or "|" depending on which is used
+        if(strpos($choicesString,'\n') !== false)
+            $choicesArray1 = explode('\n', $choicesString);
         else
             $choicesArray1 = explode('|', $choicesString);
 
@@ -209,7 +209,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         }
         return $fieldValues;
     }
-    
+
     function saveNotifSettings($projectID,$notifProjectID,$postData) {
         $notifProject = new \Project($notifProjectID);
         /*echo "<pre>";
@@ -480,7 +480,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
                         $this->checkRecordFields($project, $logEntry, $jsonOptions[self::FIELD_NAME_SETTING], function ($recordId, $formName=null, $instance=null) use ($notification, $user, $pastDue) {
                             $notificationMessage['message'] = "Record ID: $recordId<br/>Form Modified: $formName";
                             if ($instance) {
-                                $notificationMessage['message'] .= "<br/>Instance: $instance";
+                                $notificationMessage['message'] .= "\nInstance: $instance";
                             }
                             $this->saveNotification($notification, $user, $notificationMessage, $pastDue);
                         });
@@ -631,7 +631,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         if ($repeating) {
             if ((count(array_unique($matches[$eventId])) === 1 && array_pop($matches[$eventId])) &&
                 (count(array_unique($matches['repeat_instances'][$eventId][$formName][$instance])) === 1 && array_pop($matches['repeat_instances'][$eventId][$formName][$instance]))) {
-//                    $notificationMessage = "Record ID: " . $logEntry['pk'] . "<br/>Instance: $instance<br/>Form Modified: $formName";
+//                    $notificationMessage = "Record ID: " . $logEntry['pk'] . "\nInstance: $instance\nForm Modified: $formName";
                 $callback($recordId, $formName, $instance);
             } else {//Failed check on repeating values
             }
