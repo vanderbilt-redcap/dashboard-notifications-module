@@ -225,6 +225,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         }
         if ($recordID != "") {
             $saveData[$notifProject->table_pk] = $recordID;
+
             $notifType = db_real_escape_string($postData[$this->getProjectSetting("notif-type")]);
             $saveData[$this->getProjectSetting("project-field")] = $projectID;
             $saveData[$this->getProjectSetting("notif-name")] = db_real_escape_string($postData[$this->getProjectSetting("notif-name")]);
@@ -297,7 +298,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             $recordsObject = new \Records;
             $recordsObject->saveData($notifProjectID, 'array', [$saveData[$notifProject->table_pk] => [$notifProject->firstEventId => $saveData]],$overwrite);
             if (method_exists($recordsObject,'addRecordToRecordListCache')) {
-                $recordsObject->addRecordToRecordListCache($notifProjectID, $saveData[$notifProject->table_pk], $notifProject->firstArmId);
+                $recordsObject->addRecordToRecordListCache($notifProjectID, $saveData[$notifProject->table_pk], $notifProject->firstArmNum);
             }
         }
     }
@@ -697,15 +698,9 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
     {
         $projectEvent = $this->notificationProject->firstEventId;
         $notifForm = $this->notificationProject->metadata[$this->getProjectSetting('user-created')]['form_name'];
-        echo "Notification:<br/>";
-        echo "<pre>";
-        print_r($notification);
-        echo "</pre>";
+
         $details = $notification['repeat_instances'][$projectEvent][$notifForm];
-echo "Details:<br/>";
-echo "<pre>";
-print_r($details);
-echo "</pre>";
+
         $recordID = $notification[$projectEvent][$this->notificationProject->table_pk];
         //if it's an array then get the max key. if it's not then the instance is 1
         $instance = is_array($details) ? max(array_keys($details)) + 1 : 1;
@@ -722,10 +717,7 @@ echo "</pre>";
         if ($pastDue != "") {
             $changes[$recordID][$this->getProjectSetting("pastdue-date")] = date("Y-m-d", strtotime($changes[$recordID]['repeat_instances'][$notifForm][$instance][$this->getProjectSetting("notif-date")] . " + $pastDue days"));
         }
-        echo "Changes:<br/>";
-echo "<pre>";
-        print_r($changes);
-        echo "</pre>";
+
         $result = \REDCap::saveData($this->notificationProject->project_id, 'array', [$changes],'overwrite');
 
         /*$notification->updateDetails($changes);
