@@ -55,6 +55,8 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             $lastEvent = $this->getProjectSetting('lastEvent') ? $this->getProjectSetting('lastEvent') : 0;
 
             $lastEvent = $this->getLogs($project, $lastEvent);
+
+            $this->disableUserBasedSettingPermissions();
             $this->setProjectSetting('lastEvent', $lastEvent);
         }
     }
