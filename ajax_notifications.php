@@ -10,7 +10,7 @@ include_once('base.php');
 $projectID = $_REQUEST['pid'];
 $notifProjectID = $module->getProjectSetting("notif-project");
 $notifCount = $_POST['div_count'];
-$returnHTML = "<div id='notification_".$notifCount."'>";
+$returnHTML = "<div class='col-md-12' style='display:inline-block;' id='notification_".$notifCount."'>";
 if (isset($_POST['notif_record']) && is_numeric($projectID) && is_numeric($notifProjectID)) {
     $recordID = "";
     $notifProject = new \Project($notifProjectID);
@@ -69,7 +69,17 @@ if (isset($_POST['notif_record']) && is_numeric($projectID) && is_numeric($notif
 
     if ($_POST['new_name'] != "") $notifName = db_real_escape_string($_POST['new_name']);
     if ($repeatProjects) {
-
+        $projectList = $module->getProjects(USERID);
+        echo "<div class='col-md-12' style='display:inline-block;padding:5px;' id='projectlistdiv'>
+            <div class='col-md-3'><input type='button' value='Add Project' onclick='addProjectDiv(\"projectlistdiv\");'/></div>";
+        echo "<div class='col-md-9'><select style='width:75%;text-overflow:ellipsis;' name='projectlist[]'><option value=''></option>";
+        foreach($projectList as $projectID => $projectName) {
+            if ($projectID != "" && $projectName != "") {
+                echo "<option value='$projectID'>$projectName</option>";
+            }
+        }
+        echo "</select></div>";
+        echo "</div>";
     }
     $returnHTML .= "<div style='padding: 3px;background-color:lightgreen;border:1px solid;'>Notification Name: <input name='".$module->getProjectSetting("notif-name")."' id='".$module->getProjectSetting("notif-name")."' type='text' value='".$notifName."' /></div>
                 <div style='padding: 3px;background-color:lightgreen;border:1px solid;'><span class='notif' style='display:inline-block;'>Active Notification?</span><span class='notif' style='display:inline-block;'><input name='".$module->getProjectSetting("notif-active")."' type='radio' value='0' ".($notifActive == "0" ? "checked" : "")."/>No<br/><input name='".$module->getProjectSetting("notif-active")."' type='radio' value='1' ".($notifActive == "1" ? "checked" : "")."/>Yes</span></div>
@@ -266,6 +276,15 @@ echo $returnHTML;
             returnHTML += "/></span>";
         }
         $('#'+destination).html(returnHTML);
+    }
+
+    function addProjectDiv(divid) {
+        var optionText = "<div class='col-md-3'></div><div class='col-md-9'><select style='width:75%;text-overflow:ellipsis;' name='projectlist[]'><option value=''></option>";
+        jQuery('#'+divid).find('option').each(function () {
+            optionText += "<option value='"+jQuery(this).val()+"'>"+jQuery(this).text()+"</option>";
+        })
+        optionText += "</select></div>";
+        jQuery('#'+divid).append(optionText);
     }
 
     function generateRepeatableFieldList(repeatDivID, fieldListID, selectFieldID, fieldOptionsID, fieldOptionsRequired, fieldLabel) {

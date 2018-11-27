@@ -44,7 +44,7 @@ if ($projectID != "" && $notifProjectID != "") {
                 </div>
                 <div><button id='submit_role' type='button' onclick='loadNotif(\"notif_select\",\"new_notif_name\",\"notif_information\",\"".$projectID."\");'>Apply</button></div>
             </div>
-            <div class='col-md-10' id='notif_information' style='display:none;'>
+            <div id='notif_information' style='display:none;width:100%;'>
             </div>
         </form>
     </div>";

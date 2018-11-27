@@ -320,6 +320,62 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         return $returnIDs;
     }
 
+    function getProjects($userID) {
+        $returnString = array();
+        $sql = "SELECT DISTINCT p.project_id, p.app_title
+            FROM redcap_projects p
+            WHERE p.project_id IN (SELECT projects.project_id
+                FROM redcap_projects projects, redcap_user_rights users
+                WHERE users.username = '$userID' and users.project_id = projects.project_id)
+            ORDER BY p.project_id";
+        //echo "$sql<br/>";
+        $result = db_query($sql);
+        while ($row = db_fetch_assoc($result)) {
+            $returnString[$row['project_id']] = $row['app_title'];
+        }
+        return $returnString;
+    }
+
+    function getModuleID($prefix) {
+        $id = "";
+        $id = ExternalModules::getIdForPrefix($prefix);
+        return $id;
+    }
+
+    function setModuleOnProject($destProjectID) {
+        $this->disableUserBasedSettingPermissions();
+        $externalModuleId = $this->getModuleID($this->PREFIX);
+        $settingsResult = ExternalModules::getSettings(array($this->PREFIX),array($this->getProjectId()));
+
+        while($row = ExternalModules::validateSettingsRow(db_fetch_assoc($settingsResult))) {
+            $key = $row['key'];
+            $notifSettings[$key] = $row;
+        }
+
+        $currentSettings = array();
+        $sql = "SELECT key,value
+            FROM redcap_external_module_settings
+            WHERE external_module_id = '$externalModuleId'
+            AND `key`='enabled'
+            AND project_id=$destProjectID";
+        $result = db_query($sql);
+        while ($row = db_fetch_assoc($result)) {
+            $currentSettings[$row['key']] = $row['value'];
+        }
+        if (!isset($currentSettings['enabled']) || $currentSettings['enabled'] == "") {
+            foreach ($notifSettings as $key => $value) {
+                if ($key == "lastEvent") continue;
+                $insertsql = "INSERT INTO redcap_external_module_settings (external_module_id,project_id,`key`,`type`,`value`) 
+                  VALUES ($externalModuleId,$destProjectID,'$key','".$value['type']."','".$value['value']."')";
+                //echo "$insertsql<br/>";
+                db_query($insertsql);
+                if ($error = db_error()) {
+                    die($insertsql . ': ' . $error);
+                }
+            }
+        }
+    }
+
     /**
      * @param \Project $project
      * @param $lastEvent
@@ -327,7 +383,20 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
      */
     function getLogs($project, $lastEvent)
     {
+        /*$lastEvent = '20180000000000';
+        echo "Started Project ID Log Check: ".time()."<br/>";
+        $sql = "SELECT * FROM redcap_log_event 
+                  WHERE project_id = {$project->project_id}
+                  ORDER BY ts DESC";
+        //echo "$sql<br/>";
+        $q   = db_query($sql);
 
+        if ($error = db_error()) {
+            die($sql . ': ' . $error);
+        }
+
+        echo "After Project ID Log Check: ".time()."<br/>";
+        echo "Started Project ID and TS Log Check: ".time()."<br/>";
         $sql = "SELECT * FROM redcap_log_event 
                   WHERE project_id = {$project->project_id}
                   AND ts > $lastEvent
@@ -339,6 +408,36 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             die($sql . ': ' . $error);
         }
 
+        echo "After Project ID and TS Log Check: ".time()."<br/>";
+
+        echo "Started Project ID and Description Log Check: ".time()."<br/>";
+        $sql = "SELECT * FROM redcap_log_event 
+                  WHERE project_id = {$project->project_id}
+                  AND description IN ('".implode("','",array_keys($this->notificationTypes))."')
+                  ORDER BY ts DESC";
+        //echo "$sql<br/>";
+        $q   = db_query($sql);
+
+        if ($error = db_error()) {
+            die($sql . ': ' . $error);
+        }
+
+        echo "After Project ID and Description Log Check: ".time()."<br/>";*/
+
+        //echo "Started Project ID, Time, and Description Log Check: ".time()."<br/>";
+        $sql = "SELECT * FROM redcap_log_event 
+                  WHERE project_id = {$project->project_id}
+                  AND ts > $lastEvent
+                  AND description IN ('".implode("','",array_keys($this->notificationTypes))."')
+                  ORDER BY ts DESC";
+        //echo "$sql<br/>";
+        $q   = db_query($sql);
+
+        if ($error = db_error()) {
+            die($sql . ': ' . $error);
+        }
+
+        //echo "After Project ID, Time, and Description Log Check: ".time()."<br/>";
         $rawData   = [];
         while ($row = db_fetch_assoc($q)) {
             $rawData[] = $row;
@@ -351,7 +450,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
                 $this->handleLogEntry($project, $row['description'], $row);
             }
         }
-
+        //echo "After all checks: ".time()."<br/>";
         return $lastEvent;
     }
 

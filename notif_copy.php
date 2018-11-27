@@ -15,10 +15,19 @@ require_once APP_PATH_DOCROOT . 'ProjectGeneral/header.php';
 <?php
 $projectID = $_REQUEST['pid'];
 $notifProjectID = $module->getProjectSetting("notif-project");
+
 if ($projectID != "" && $notifProjectID != "") {
     if (!empty($_POST)) {
-        //TODO Need to loop through notifications here, isn't just a single one
-        $module->saveNotifSettings($projectID, $notifProjectID, $_POST);
+        $notificationSettings = $module->getProjectSettings();
+
+        foreach ($_POST['projectlist'] as $loopProjectID) {
+            $module->setModuleOnProject($loopProjectID);
+            $postData = $_POST;
+            $postData['record_id'] = $module->getAutoId($notifProjectID);
+            $postData['receive_roles_list'] = $module->transferRoleIDsBetweenProjects($_POST['receive_roles_list'],$loopProjectID);
+            $postData['resolve_roles_list'] = $module->transferRoleIDsBetweenProjects($_POST['resolve_roles_list'],$loopProjectID);
+            $module->saveNotifSettings($loopProjectID, $notifProjectID, $postData);
+        }
     }
     $notifProject = new \Project($notifProjectID);
     $notifMetaData = $notifProject->metadata;
@@ -43,7 +52,7 @@ if ($projectID != "" && $notifProjectID != "") {
                     <input type='button' value='Add' onclick='addNotif(\"notif_select\",\"notif_information\",\"".$projectID."\");'>
                 </div>
             </div>
-            <div class='col-md-12' id='notif_information' style='display:none;'>
+            <div id='notif_information' style='display:none;width:100%;'>
             </div>
         </form>
     </div>";
