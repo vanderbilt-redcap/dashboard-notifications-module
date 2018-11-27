@@ -353,7 +353,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         }
 
         $currentSettings = array();
-        $sql = "SELECT key,value
+        $sql = "SELECT `key`,`value`
             FROM redcap_external_module_settings
             WHERE external_module_id = '$externalModuleId'
             AND `key`='enabled'
@@ -429,7 +429,8 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
                   WHERE project_id = {$project->project_id}
                   AND ts > $lastEvent
                   AND description IN ('".implode("','",array_keys($this->notificationTypes))."')
-                  ORDER BY ts DESC";
+                  ORDER BY ts DESC
+                  LIMIT 5000";
         //echo "$sql<br/>";
         $q   = db_query($sql);
 
