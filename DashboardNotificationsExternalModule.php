@@ -430,7 +430,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
                   AND ts > $lastEvent
                   AND description IN ('".implode("','",array_keys($this->notificationTypes))."')
                   ORDER BY ts DESC
-                  LIMIT 5000";
+                  LIMIT 1000";
         //echo "$sql<br/>";
         $q   = db_query($sql);
 
