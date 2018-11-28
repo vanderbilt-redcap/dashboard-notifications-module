@@ -61,12 +61,12 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         }
     }
 
-    function redcap_module_link_check_display($project_id, $link) {
+    /*function redcap_module_link_check_display($project_id, $link) {
         if(\REDCap::getUserRights(USERID)[USERID]['design'] == '1'){
             return $link;
         }
         return null;
-    }
+    }*/
 
     function getNotifications($projectID,$sourceProjectID = "") {
         if (is_numeric($sourceProjectID)) {
@@ -365,6 +365,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         if (!isset($currentSettings['enabled']) || $currentSettings['enabled'] == "") {
             foreach ($notifSettings as $key => $value) {
                 if ($key == "lastEvent") continue;
+                if ($key == 'enabled' && $value == "1") $value = "true";
                 $insertsql = "INSERT INTO redcap_external_module_settings (external_module_id,project_id,`key`,`type`,`value`) 
                   VALUES ($externalModuleId,$destProjectID,'$key','".$value['type']."','".$value['value']."')";
                 //echo "$insertsql<br/>";
@@ -383,47 +384,6 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
      */
     function getLogs($project, $lastEvent)
     {
-        /*$lastEvent = '20180000000000';
-        echo "Started Project ID Log Check: ".time()."<br/>";
-        $sql = "SELECT * FROM redcap_log_event 
-                  WHERE project_id = {$project->project_id}
-                  ORDER BY ts DESC";
-        //echo "$sql<br/>";
-        $q   = db_query($sql);
-
-        if ($error = db_error()) {
-            die($sql . ': ' . $error);
-        }
-
-        echo "After Project ID Log Check: ".time()."<br/>";
-        echo "Started Project ID and TS Log Check: ".time()."<br/>";
-        $sql = "SELECT * FROM redcap_log_event 
-                  WHERE project_id = {$project->project_id}
-                  AND ts > $lastEvent
-                  ORDER BY ts DESC";
-        //echo "$sql<br/>";
-        $q   = db_query($sql);
-
-        if ($error = db_error()) {
-            die($sql . ': ' . $error);
-        }
-
-        echo "After Project ID and TS Log Check: ".time()."<br/>";
-
-        echo "Started Project ID and Description Log Check: ".time()."<br/>";
-        $sql = "SELECT * FROM redcap_log_event 
-                  WHERE project_id = {$project->project_id}
-                  AND description IN ('".implode("','",array_keys($this->notificationTypes))."')
-                  ORDER BY ts DESC";
-        //echo "$sql<br/>";
-        $q   = db_query($sql);
-
-        if ($error = db_error()) {
-            die($sql . ': ' . $error);
-        }
-
-        echo "After Project ID and Description Log Check: ".time()."<br/>";*/
-
         if ($lastEvent == "") {
             $lastEvent = date("YmdHis");
         }
