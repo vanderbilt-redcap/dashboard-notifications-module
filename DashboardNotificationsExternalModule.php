@@ -365,7 +365,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         if (!isset($currentSettings['enabled']) || $currentSettings['enabled'] == "") {
             foreach ($notifSettings as $key => $value) {
                 if ($key == "lastEvent") continue;
-                if ($key == 'enabled' && $value == "1") $value = "true";
+                if ($key == 'enabled' && $value['value'] == 1) $value['value'] = "true";
                 $insertsql = "INSERT INTO redcap_external_module_settings (external_module_id,project_id,`key`,`type`,`value`) 
                   VALUES ($externalModuleId,$destProjectID,'$key','".$value['type']."','".$value['value']."')";
                 //echo "$insertsql<br/>";
