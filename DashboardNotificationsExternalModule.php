@@ -424,13 +424,15 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
 
         echo "After Project ID and Description Log Check: ".time()."<br/>";*/
 
+        if ($lastEvent == "") {
+            $lastEvent = date("YmdHis");
+        }
         //echo "Started Project ID, Time, and Description Log Check: ".time()."<br/>";
         $sql = "SELECT * FROM redcap_log_event 
                   WHERE project_id = {$project->project_id}
                   AND ts > $lastEvent
                   AND description IN ('".implode("','",array_keys($this->notificationTypes))."')
-                  ORDER BY ts DESC
-                  LIMIT 1000";
+                  ORDER BY ts DESC";
         //echo "$sql<br/>";
         $q   = db_query($sql);
 
