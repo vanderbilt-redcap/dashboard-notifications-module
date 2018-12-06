@@ -499,10 +499,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             $recordId        = $logEntry['pk'];
             $eventId         = $logEntry['event_id'];
             $logVals   = $this->getKeyValuesFromLog($logEntry);
-            echo "Log Vals:<br/>";
-            echo "<pre>";
-            print_r($logVals);
-            echo "</pre>";
+
             $instance  = $logVals['instance'];
             unset($logVals['instance']);
             if (is_null($instance)) {
@@ -683,6 +680,11 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         if (is_null($instance)) {
             $instance = 1;
         }
+        echo "Form Name: $formName<br/>";
+        echo "Fields:<br/>";
+        echo "<pre>";
+        print_r($fields);
+        echo "</pre>";
         //creates an array that mirrors the structure of REDCap getData, but with booleans for all the field values which indicates which fields matched the provided values to check against
         //Reasoning is to possibly switch the functionality from AND only to OR, so we'd need to preserve all the individual matches
         foreach ($fields as $fieldName => $checkValues) {
@@ -707,6 +709,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             if ((count(array_unique($matches[$eventId])) === 1 && array_pop($matches[$eventId])) &&
                 (count(array_unique($matches['repeat_instances'][$eventId][$formName][$instance])) === 1 && array_pop($matches['repeat_instances'][$eventId][$formName][$instance]))) {
 //                    $notificationMessage = "Record ID: " . $logEntry['pk'] . "\nInstance: $instance\nForm Modified: $formName";
+                echo "Got matched on first repeating<br/>";
                 $callback($recordId, $formName, $instance);
             } else {//Failed check on repeating values
             }
@@ -716,12 +719,14 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
                     foreach ($matches['repeat_instances'][$eventId] as $form => $instances) {
                         foreach ($instances as $instanceNum => $fieldMatches) {
                             if (count(array_unique($fieldMatches)) === 1 && array_pop($fieldMatches)) {
+                                echo "Got matched on repeating else<br/>";
                                 $callback($recordId, $formName, $instanceNum);
                             } else { //Failed check on non-repeating values
                             }
                         }
                     }
                 } else {
+                    echo "Got matched on the final<br/>";
                     $callback($recordId, $formName);
                 }
             } else {//Failed a check against non-repeating values
