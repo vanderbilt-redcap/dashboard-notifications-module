@@ -57,7 +57,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             $lastEvent = $this->getLogs($project, $lastEvent);
 
             $this->disableUserBasedSettingPermissions();
-            $this->setProjectSetting('lastEvent', $lastEvent);
+            //$this->setProjectSetting('lastEvent', $lastEvent);
         }
     }
 
@@ -469,6 +469,11 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             $filterLogic .= ")";
         }
         $filterLogic .= ")";*/
+        echo "Project: ".$project->project_id."<br/>";
+        echo "Log Type: $logType<br/>";
+        echo "<pre>";
+        print_r($logEntry);
+        echo "</pre>";
 
         $notifications = \REDCap::getData($this->notificationProject->project_id,'array', "", array(), $projectEvent, array(), false, false, false);
 
