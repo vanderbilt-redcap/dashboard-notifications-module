@@ -691,11 +691,9 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             $fieldMeta = $project->metadata[$fieldName];
             $isCheckbox = $fieldMeta['element_type'] === 'checkbox';
             if (!$project->isRepeatingForm($eventId,$fieldMeta['form_name']) && array_key_exists($eventId, $recordData[$recordId])) {
-                echo "Got a match on not repeating form for $fieldName<br/>";
                 $actualValue = $recordData[$recordId][$eventId][$fieldName];
                 $matches[$eventId][$fieldName] = $this->checkSingleValue($checkValues, $actualValue, $isCheckbox);
             } else if ($project->isRepeatingForm($eventId,$fieldMeta['form_name']) && array_key_exists($eventId, $recordData[$recordId]['repeat_instances'])) {
-                echo "Got a match on repeating form for $fieldName<br/>";
                 foreach ($recordData[$recordId]['repeat_instances'][$eventId] as $form => $instances) {
                     foreach ($instances as $instanceNum => $instanceFields) {
                         $actualValue = $instanceFields[$fieldName];
@@ -730,7 +728,6 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
                         }
                     }
                 } else {
-                    echo "Got matched on the final<br/>";
                     $callback($recordId, $formName);
                 }
             } else {//Failed a check against non-repeating values
@@ -748,6 +745,12 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
      */
     function checkSingleValue($validValues, $actualValue, $isCheckbox)
     {
+        echo "Valid values:<br/>";
+        echo "<pre>";
+        print_r($validValues);
+        echo "</pre>";
+        echo "Actual Value: $actualValue<br/>";
+        echo "Is checkbox? ".($isCheckbox ? "true" : "false")."<br/>";
         if ($isCheckbox){
             if (empty($validValues)) {
                 $match = in_array(1, $actualValue);
