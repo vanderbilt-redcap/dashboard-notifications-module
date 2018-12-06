@@ -294,9 +294,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             }
             $notifSettings[$this::PASTDUE_SETTING] = db_real_escape_string($postData[$this::PASTDUE_SETTING]);
             $saveData[$this->getProjectSetting("access-json")] = json_encode($notifSettings);
-            /*echo "<pre>";
-            print_r($saveData);
-            echo "</pre>";*/
+
             $recordsObject = new \Records;
             $recordsObject->saveData($notifProjectID, 'array', [$saveData[$notifProject->table_pk] => [$notifProject->firstEventId => $saveData]],$overwrite);
             if (method_exists($recordsObject,'addRecordToRecordListCache')) {
