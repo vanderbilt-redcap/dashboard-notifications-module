@@ -499,6 +499,10 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             $recordId        = $logEntry['pk'];
             $eventId         = $logEntry['event_id'];
             $logVals   = $this->getKeyValuesFromLog($logEntry);
+            echo "Log Vals:<br/>";
+            echo "<pre>";
+            print_r($logVals);
+            echo "</pre>";
             $instance  = $logVals['instance'];
             unset($logVals['instance']);
             if (is_null($instance)) {
