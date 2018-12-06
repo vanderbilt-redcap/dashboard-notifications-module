@@ -691,9 +691,11 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             $fieldMeta = $project->metadata[$fieldName];
             $isCheckbox = $fieldMeta['element_type'] === 'checkbox';
             if (!$project->isRepeatingForm($eventId,$fieldMeta['form_name']) && array_key_exists($eventId, $recordData[$recordId])) {
+                echo "Got a match on not repeating form for $fieldName<br/>";
                 $actualValue = $recordData[$recordId][$eventId][$fieldName];
                 $matches[$eventId][$fieldName] = $this->checkSingleValue($checkValues, $actualValue, $isCheckbox);
             } else if ($project->isRepeatingForm($eventId,$fieldMeta['form_name']) && array_key_exists($eventId, $recordData[$recordId]['repeat_instances'])) {
+                echo "Got a match on repeating form for $fieldName<br/>";
                 foreach ($recordData[$recordId]['repeat_instances'][$eventId] as $form => $instances) {
                     foreach ($instances as $instanceNum => $instanceFields) {
                         $actualValue = $instanceFields[$fieldName];
@@ -705,11 +707,14 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
                 continue;
             }
         }
+        echo "Matches:<br/>";
+        echo "<pre>";
+        print_r($matches);
+        echo "</pre>";
         if ($repeating) {
             if ((count(array_unique($matches[$eventId])) === 1 && array_pop($matches[$eventId])) &&
                 (count(array_unique($matches['repeat_instances'][$eventId][$formName][$instance])) === 1 && array_pop($matches['repeat_instances'][$eventId][$formName][$instance]))) {
 //                    $notificationMessage = "Record ID: " . $logEntry['pk'] . "\nInstance: $instance\nForm Modified: $formName";
-                echo "Got matched on first repeating<br/>";
                 $callback($recordId, $formName, $instance);
             } else {//Failed check on repeating values
             }
@@ -719,7 +724,6 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
                     foreach ($matches['repeat_instances'][$eventId] as $form => $instances) {
                         foreach ($instances as $instanceNum => $fieldMatches) {
                             if (count(array_unique($fieldMatches)) === 1 && array_pop($fieldMatches)) {
-                                echo "Got matched on repeating else<br/>";
                                 $callback($recordId, $formName, $instanceNum);
                             } else { //Failed check on non-repeating values
                             }
