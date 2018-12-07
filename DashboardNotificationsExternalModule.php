@@ -34,6 +34,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
 
     private $notificationTypes = [
         "Create record"                     => [0, 5, 6, 7],
+        "Create survey response"            => [0,5,6,7],
         "Update record"                     => [5, 6, 7],
         "Create data collection instrument" => [1],
         "Create project field"              => [2],
