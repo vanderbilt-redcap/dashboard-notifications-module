@@ -57,7 +57,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             $lastEvent = $this->getLogs($project, $lastEvent);
 
             $this->disableUserBasedSettingPermissions();
-            //$this->setProjectSetting('lastEvent', $lastEvent);
+            $this->setProjectSetting('lastEvent', $lastEvent);
         }
     }
 
@@ -469,11 +469,6 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             $filterLogic .= ")";
         }
         $filterLogic .= ")";*/
-        echo "Project: ".$project->project_id."<br/>";
-        echo "Log Type: $logType<br/>";
-        echo "<pre>";
-        print_r($logEntry);
-        echo "</pre>";
 
         $notifications = \REDCap::getData($this->notificationProject->project_id,'array', "", array(), $projectEvent, array(), false, false, false);
 
@@ -621,10 +616,6 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             }
         }
 
-        echo "Key values:<br/>";
-        echo "<pre>";
-        print_r($keyValuePairs);
-        echo "</pre>";
         return $keyValuePairs;
     }
 
@@ -694,11 +685,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         if (is_null($instance)) {
             $instance = 1;
         }
-        echo "Form Name: $formName<br/>";
-        echo "Fields:<br/>";
-        echo "<pre>";
-        print_r($fields);
-        echo "</pre>";
+
         //creates an array that mirrors the structure of REDCap getData, but with booleans for all the field values which indicates which fields matched the provided values to check against
         //Reasoning is to possibly switch the functionality from AND only to OR, so we'd need to preserve all the individual matches
         foreach ($fields as $fieldName => $checkValues) {
@@ -719,10 +706,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
                 continue;
             }
         }
-        echo "Matches:<br/>";
-        echo "<pre>";
-        print_r($matches);
-        echo "</pre>";
+
         if ($repeating) {
             if ((count(array_unique($matches[$eventId])) === 1 && array_pop($matches[$eventId])) &&
                 (count(array_unique($matches['repeat_instances'][$eventId][$formName][$instance])) === 1 && array_pop($matches['repeat_instances'][$eventId][$formName][$instance]))) {
@@ -759,12 +743,6 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
      */
     function checkSingleValue($validValues, $actualValue, $isCheckbox)
     {
-        echo "Valid values:<br/>";
-        echo "<pre>";
-        print_r($validValues);
-        echo "</pre>";
-        echo "Actual Value: $actualValue<br/>";
-        echo "Is checkbox? ".($isCheckbox ? "true" : "false")."<br/>";
         if ($isCheckbox){
             if (empty($validValues)) {
                 $match = in_array(1, $actualValue);
