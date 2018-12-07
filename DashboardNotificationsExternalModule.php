@@ -666,13 +666,20 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         $matches         = [];
         //this tells if the form that triggered the check is repeating
         $logVals   = $this->getKeyValuesFromLog($logEntry);
-        echo "Log Vals:<br/>";
-        echo "<pre>";
-        print_r($logVals);
-        echo "</pre>";
+
         $instance  = $logVals['instance'];
         unset($logVals['instance']);
         if (count($logVals) === 0) {
+            return;
+        }
+
+        $logFieldMatch = false;
+        foreach ($fields as $fieldName => $checkValues) {
+            if (in_array($fieldName,array_keys($logVals))) {
+                $logFieldMatch = true;
+            }
+        }
+        if (!$logFieldMatch) {
             return;
         }
 
