@@ -57,7 +57,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             $lastEvent = $this->getLogs($project, $lastEvent);
 
             $this->disableUserBasedSettingPermissions();
-            $this->setProjectSetting('lastEvent', $lastEvent);
+            //$this->setProjectSetting('lastEvent', $lastEvent);
         }
     }
 
@@ -666,7 +666,10 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         $matches         = [];
         //this tells if the form that triggered the check is repeating
         $logVals   = $this->getKeyValuesFromLog($logEntry);
-
+        echo "Log Vals:<br/>";
+        echo "<pre>";
+        print_r($logVals);
+        echo "</pre>";
         $instance  = $logVals['instance'];
         unset($logVals['instance']);
         if (count($logVals) === 0) {
