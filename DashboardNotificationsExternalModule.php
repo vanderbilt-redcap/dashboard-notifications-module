@@ -617,7 +617,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             }
             list($var, $val) = explode(' = ', $keyVal);
             if (!empty($var)) {
-                $keyValuePairs[$var] = $val;
+                $keyValuePairs[trim($var)] = $val;
             }
         }
 
