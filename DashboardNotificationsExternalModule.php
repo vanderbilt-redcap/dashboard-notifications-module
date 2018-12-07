@@ -621,6 +621,10 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             }
         }
 
+        echo "Key values:<br/>";
+        echo "<pre>";
+        print_r($keyValuePairs);
+        echo "</pre>";
         return $keyValuePairs;
     }
 
