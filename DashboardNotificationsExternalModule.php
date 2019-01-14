@@ -673,9 +673,21 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         }
 
         $logFieldMatch = false;
+
         foreach ($fields as $fieldName => $checkValues) {
-            if (in_array($fieldName,array_keys($logVals))) {
-                $logFieldMatch = true;
+            $fieldMeta = $project->metadata[$fieldName];
+            $isCheckbox = $fieldMeta['element_type'] === 'checkbox';
+            if ($isCheckbox) {
+                foreach ($checkValues as $checkValue) {
+                    if (in_array($fieldName."(".$checkValue.")", array_keys($logVals))) {
+                        $logFieldMatch = true;
+                    }
+                }
+            }
+            else {
+                if (in_array($fieldName, array_keys($logVals))) {
+                    $logFieldMatch = true;
+                }
             }
         }
         if (!$logFieldMatch) {
