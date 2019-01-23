@@ -730,12 +730,13 @@ echo "Instance: $instance<br/>";
 
         if ($repeating) {
             echo "Repeating<br/>";
+            echo "Form Name: $formName<br/>";
             echo "Event ID: $eventId<br/>";
             echo "Matches:<br/>";
             echo "<pre>";
             print_r($matches);
             echo "</pre>";
-            if ((count(array_unique($matches[$eventId])) === 1) &&
+            if ((count(array_unique($matches[$eventId])) === 1) ||
                 (count(array_unique($matches['repeat_instances'][$eventId][$formName][$instance])) === 1)) {
 //                    $notificationMessage = "Record ID: " . $logEntry['pk'] . "\nInstance: $instance\nForm Modified: $formName";
                 $callback($recordId, $formName, $instance);
