@@ -58,7 +58,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             $lastEvent = $this->getLogs($project, $lastEvent);
 
             $this->disableUserBasedSettingPermissions();
-            //$this->setProjectSetting('lastEvent', $lastEvent);
+            $this->setProjectSetting('lastEvent', $lastEvent);
         }
     }
 
@@ -675,9 +675,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         }
 
         $logFieldMatch = false;
-echo "<pre>";
-print_r($logVals);
-echo "</pre>";
+
         foreach ($fields as $fieldName => $checkValues) {
             $fieldMeta = $project->metadata[$fieldName];
             $isCheckbox = $fieldMeta['element_type'] === 'checkbox';
@@ -706,7 +704,7 @@ echo "</pre>";
         if (is_null($instance)) {
             $instance = 1;
         }
-echo "Instance: $instance<br/>";
+
         //creates an array that mirrors the structure of REDCap getData, but with booleans for all the field values which indicates which fields matched the provided values to check against
         //Reasoning is to possibly switch the functionality from AND only to OR, so we'd need to preserve all the individual matches
         foreach ($fields as $fieldName => $checkValues) {
@@ -729,26 +727,13 @@ echo "Instance: $instance<br/>";
         }
 
         if ($repeating) {
-            echo "Repeating<br/>";
-            echo "Form Name: $formName<br/>";
-            echo "Event ID: $eventId<br/>";
-            echo "Matches:<br/>";
-            echo "<pre>";
-            print_r($matches);
-            echo "</pre>";
-            if ((count(array_unique($matches[$eventId])) === 1) ||
+            if ((count(array_unique($matches[$eventId])) === 1) &&
                 (count(array_unique($matches['repeat_instances'][$eventId][$formName][$instance])) === 1)) {
 //                    $notificationMessage = "Record ID: " . $logEntry['pk'] . "\nInstance: $instance\nForm Modified: $formName";
                 $callback($recordId, $formName, $instance);
             } else {//Failed check on repeating values
             }
         } else {
-            echo "Not Repeating<br/>";
-            echo "Event ID: $eventId<br/>";
-            echo "Matches:<br/>";
-            echo "<pre>";
-            print_r($matches);
-            echo "</pre>";
             if ((count(array_unique($matches[$eventId])) === 1 || count(array_unique($matches['repeat_instances'][$eventId])) === 1)) {
                 if (array_key_exists('repeat_instances', $matches)) {
                     foreach ($matches['repeat_instances'][$eventId] as $form => $instances) {
