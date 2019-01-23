@@ -452,6 +452,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
     function handleLogEntry($project, $logType, $logEntry)
     {
         global $status;
+
         $user = $logEntry['user'];
         //$recordset     = new RecordSet($this->notificationProject->project_id, [$this->getProjectSetting('notif-active') => '1', $this->getProjectSetting('project-field') => $project->project_id, RecordSet::getKeyComparatorPair($this->getProjectSetting('notif-type'), 'IN') => $this->notificationTypes[$logType]]);
         //$notifications = $recordset->getRecords();
@@ -501,6 +502,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             if (is_null($instance)) {
                 $instance = 1;
             }
+
             $notificationMessage = array("record_id"=>$recordId,"event_id"=>$eventId,"instance"=>$instance,"pid"=>$project->project_id);
             switch ($selectedtype) {
                 case 0: //New Record
@@ -697,6 +699,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         $fieldMetaData = $project->metadata[trim(array_pop(array_keys($logVals)))];
         $formName = $fieldMetaData['form_name'];
 
+        //TODO This doesn't actually check whether the fields are repeating, but only the form containing the record ID. FIX THIS!
         $repeating = $project->isRepeatingForm($eventId,$formName);
         if (is_null($instance)) {
             $instance = 1;
@@ -724,18 +727,18 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         }
 
         if ($repeating) {
-            if ((count(array_unique($matches[$eventId])) === 1 && array_pop($matches[$eventId])) &&
-                (count(array_unique($matches['repeat_instances'][$eventId][$formName][$instance])) === 1 && array_pop($matches['repeat_instances'][$eventId][$formName][$instance]))) {
+            if ((count(array_unique($matches[$eventId])) === 1) &&
+                (count(array_unique($matches['repeat_instances'][$eventId][$formName][$instance])) === 1)) {
 //                    $notificationMessage = "Record ID: " . $logEntry['pk'] . "\nInstance: $instance\nForm Modified: $formName";
                 $callback($recordId, $formName, $instance);
             } else {//Failed check on repeating values
             }
         } else {
-            if (count(array_unique($matches[$eventId])) === 1 && array_pop($matches[$eventId])) {
+            if ((count(array_unique($matches[$eventId])) === 1 || count(array_unique($matches['repeat_instances'][$eventId])) === 1)) {
                 if (array_key_exists('repeat_instances', $matches)) {
                     foreach ($matches['repeat_instances'][$eventId] as $form => $instances) {
                         foreach ($instances as $instanceNum => $fieldMatches) {
-                            if (count(array_unique($fieldMatches)) === 1 && array_pop($fieldMatches)) {
+                            if (count(array_unique($fieldMatches)) === 1) {
                                 $callback($recordId, $formName, $instanceNum);
                             } else { //Failed check on non-repeating values
                             }
@@ -744,7 +747,8 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
                 } else {
                     $callback($recordId, $formName);
                 }
-            } else {//Failed a check against non-repeating values
+            } else {
+                //Failed a check against non-repeating values
             }
         }
     }
