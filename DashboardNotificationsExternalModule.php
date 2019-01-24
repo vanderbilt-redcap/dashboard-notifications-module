@@ -707,17 +707,25 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
 
         //creates an array that mirrors the structure of REDCap getData, but with booleans for all the field values which indicates which fields matched the provided values to check against
         //Reasoning is to possibly switch the functionality from AND only to OR, so we'd need to preserve all the individual matches
+        $matchCount = 0;
         foreach ($fields as $fieldName => $checkValues) {
             $fieldMeta = $project->metadata[$fieldName];
             $isCheckbox = $fieldMeta['element_type'] === 'checkbox';
             if (!$project->isRepeatingForm($eventId,$fieldMeta['form_name']) && array_key_exists($eventId, $recordData[$recordId])) {
                 $actualValue = $recordData[$recordId][$eventId][$fieldName];
                 $matches[$eventId][$fieldName] = $this->checkSingleValue($checkValues, $actualValue, $isCheckbox);
+                if ($matches[$eventId][$fieldName] === 1) {
+                    $matchCount++;
+                }
             } else if ($project->isRepeatingForm($eventId,$fieldMeta['form_name']) && array_key_exists($eventId, $recordData[$recordId]['repeat_instances'])) {
                 foreach ($recordData[$recordId]['repeat_instances'][$eventId] as $form => $instances) {
                     foreach ($instances as $instanceNum => $instanceFields) {
+                        if ($instanceNum != $instance) continue;
                         $actualValue = $instanceFields[$fieldName];
                         $matches['repeat_instances'][$eventId][$form][$instanceNum][$fieldName] = $this->checkSingleValue($checkValues, $actualValue, $isCheckbox);
+                        if ($matches['repeat_instances'][$eventId][$form][$instanceNum][$fieldName] === 1) {
+                            $matchCount++;
+                        }
                     }
                 }
             } else {
@@ -726,7 +734,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             }
         }
 
-        if ($repeating) {
+        /*if ($repeating) {
             if ((count(array_unique($matches[$eventId])) === 1) &&
                 (count(array_unique($matches['repeat_instances'][$eventId][$formName][$instance])) === 1)) {
 //                    $notificationMessage = "Record ID: " . $logEntry['pk'] . "\nInstance: $instance\nForm Modified: $formName";
@@ -750,6 +758,9 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             } else {
                 //Failed a check against non-repeating values
             }
+        }*/
+        if ($matchCount === count($fields)) {
+            $callback($recordId, $formName);
         }
     }
 
