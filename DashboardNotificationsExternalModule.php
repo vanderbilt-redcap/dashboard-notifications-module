@@ -511,7 +511,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
                 case 1: //New Form
                     if (array_key_exists(self::PROJ_PROD_SETTING, $jsonOptions) && ($jsonOptions[self::PROJ_PROD_SETTING] == '1' && $status > 0) || ($jsonOptions[self::PROJ_PROD_SETTING] == '0')) {
                         //form_name
-                        $formNames           = $this->getKeyValuesFromLog($logEntry);
+                        $formNames = $this->getKeyValuesFromLog($logEntry);
                         $notificationMessage['message'] = "Form created: {$formNames['form_name']}";
                         $notificationMessage['form_name'] = $formNames['form_name'];
                     }
@@ -571,7 +571,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
                     }
                     break;
                 case 7: //Record Count
-                    $recordId        = $logEntry['pk'];
+                    $recordId = $logEntry['pk'];
                     if (array_key_exists(self::FIELD_NAME_SETTING, $jsonOptions) && array_key_exists(self::RECORD_COUNT_SETTING, $jsonOptions) && !in_array($recordId, $jsonOptions['record_history'])) {
                         $jsonOptions['record_history'][] = $recordId;
                         $matched = false;
@@ -827,7 +827,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             $changes[$recordID][$this->getProjectSetting("pastdue-date")] = date("Y-m-d", strtotime($changes[$recordID]['repeat_instances'][$notifForm][$instance][$this->getProjectSetting("notif-date")] . " + $pastDue days"));
         }
 
-        $result = \REDCap::saveData($this->notificationProject->project_id, 'array', [$changes],'overwrite');
+        $result = \REDCap::saveData($this->notificationProject->project_id, 'json', json_encode($changes),'overwrite');
 
         /*$notification->updateDetails($changes);
         $notification->getDetails();*/
