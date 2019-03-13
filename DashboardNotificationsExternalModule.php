@@ -495,6 +495,8 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             $notificationMessage = array();
             $recordId        = $logEntry['pk'];
             $eventId         = $logEntry['event_id'];
+            $eventName = $this->getEventName($eventId);
+
             $logVals   = $this->getKeyValuesFromLog($logEntry);
 
             $instance  = $logVals['instance'];
@@ -503,7 +505,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
                 $instance = 1;
             }
 
-            $notificationMessage = array("record_id"=>$recordId,"event_id"=>$eventId,"instance"=>$instance,"pid"=>$project->project_id);
+            $notificationMessage = array("record_id"=>$recordId,"event_id"=>$eventId,"event_name"=>$eventName,"instance"=>$instance,"pid"=>$project->project_id);
             switch ($selectedtype) {
                 case 0: //New Record
                     $notificationMessage['message'] = "New Record created with ID: " . $logEntry['pk'];
@@ -626,11 +628,27 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
     }
 
     /**
+     * @param $eventID
+     */
+
+    function getEventName($eventID) {
+        $returnID = "";
+        $sql = "SELECT descrip
+            FROM redcap_events_metadata
+            WHERE event_id = $eventID
+            LIMIT 1";
+        //echo "$sql<br/>";
+        $returnID = db_result(db_query($sql),0);
+        return $returnID;
+    }
+
+    /**
      * @deprecated
      *
      * @param $sql
      * @return array
      */
+
     function getKeyValuesFromLogSQL($sql)
     {
         $matches = [];
