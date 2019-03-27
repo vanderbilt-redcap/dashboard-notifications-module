@@ -18,9 +18,6 @@ require_once APP_PATH_DOCROOT . 'ProjectGeneral/header.php';
 $projectID = $_REQUEST['pid'];
 $notifProjectID = $module->getProjectSetting("notif-project");
 if ($projectID != "" && $notifProjectID != "") {
-    /*echo "<pre>";
-    print_r($existingNotifs);
-    echo "</pre>";*/
     if (!empty($_POST)) {
         $module->saveNotifSettings($projectID,$notifProjectID,$_POST);
     }
@@ -36,7 +33,7 @@ if ($projectID != "" && $notifProjectID != "") {
                 <div style='font-weight:bold;border-bottom:4px solid;'>Select or Create a New Notification</div>
                 <div>
                     Select a Notification<br/>
-                    <select id='notif_select' onchange='hideShowNewNotif(this,\"new_role\");' style='width:80%;text-overflow: ellipsis;'></select>
+                    <select class='select2-drop' id='notif_select' onchange='hideShowNewNotif(this,\"new_role\");' style='width:80%;text-overflow: ellipsis;'></select>
                 </div>
                 <div id='new_role' style='display:none;'>
                     Name for New Notifcation<br/>
@@ -44,7 +41,7 @@ if ($projectID != "" && $notifProjectID != "") {
                 </div>
                 <div><button id='submit_role' type='button' onclick='loadNotif(\"notif_select\",\"new_notif_name\",\"notif_information\",\"".$projectID."\");'>Apply</button></div>
             </div>
-            <div id='notif_information' style='display:none;width:100%;'>
+            <div id='notif_information' class='col-md-10' style='display:none;width:100%;'>
             </div>
         </form>
     </div>";
@@ -81,6 +78,7 @@ if ($projectID != "" && $notifProjectID != "") {
             }
             ?>
             $('#notif_select').change();
+            $('.select2-drop').select2();
         });
         function loadNotif(notif,newName,destination,projectid) {
             var notifValue = $('#'+notif).val();

@@ -30,16 +30,18 @@ if ($projectID != "" && $notifProjectID != "") {
         }
     }
     $notifProject = new \Project($notifProjectID);
+    $notifEventID = $notifProject->firstEventId;
     $notifMetaData = $notifProject->metadata;
     $notifClassChoice = $module->getChoicesFromMetaData($notifMetaData[$module->getProjectSetting("notif-class")]['element_enum']);
     $existingNotifs = $module->getNotifications($notifProjectID);
+    usort($existingNotifs,function ($a,$b) { global $module,$notifEventID; return strcmp($a[$notifEventID][$module->getProjectSetting('notif-class')]." - ".$a[$notifEventID][$module->getProjectSetting('notif-name')], $b[$notifEventID][$module->getProjectSetting('notif-class')]." - ".$b[$notifEventID][$module->getProjectSetting('notif-name')]);});
 
     echo "<div class='col-md-12' style='padding:0;'>
         <form method='post' action='".$module->getUrl('notif_copy.php')."'>
             <div class='col-md-12 bg-info' style='padding:10px;'>
                 <div class='col-md-10'>
                     Select a Notification for Duplication<br/>
-                    <select id='notif_select' style='width:90%;text-overflow: ellipsis;'>";
+                    <select class='select2-drop' id='notif_select' style='width:90%;text-overflow: ellipsis;'>";
                         foreach ($existingNotifs as $recordID => $eventData) {
                             foreach ($eventData as $event_id => $recordData) {
                                 if ($event_id == "repeat_instances") continue;
@@ -79,6 +81,10 @@ if ($projectID != "" && $notifProjectID != "") {
     </style>
 
     <script>
+        $(document).ready(function() {
+            $('.select2-drop').select2();
+        });
+
         function addNotif(notif,destination,projectid) {
             var notifValue = $('#' + notif).val();
             var notifCount = $('div[id^=notification_]').length;

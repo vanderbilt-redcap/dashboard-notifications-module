@@ -125,6 +125,12 @@
       "name": "Paragraph text field that stores the context of a notification event",
       "type":"text",
       "repeatable": false
+    },
+    {
+      "key": "unique-user",
+      "name": "Field to Store Unique User Assignment",
+      "type":"text",
+      "repeatable": false
     }
   ]
 }

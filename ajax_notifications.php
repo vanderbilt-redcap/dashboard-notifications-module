@@ -71,8 +71,8 @@ if (isset($_POST['notif_record']) && is_numeric($projectID) && is_numeric($notif
     if ($repeatProjects) {
         $projectList = $module->getProjects(USERID);
         echo "<div class='col-md-12' style='display:inline-block;padding:5px;' id='projectlistdiv'>
-            <div class='col-md-3'><input type='button' value='Add Project' onclick='addProjectDiv(\"projectlistdiv\");'/></div>";
-        echo "<div class='col-md-9'><select style='width:75%;text-overflow:ellipsis;' name='projectlist[]'><option value=''></option>";
+            <div class='col-md-3'><input type='button' value='Add Project' onclick='addProjectDiv(\"projectlistdiv\",\"source-projects\");'/></div>";
+        echo "<div class='col-md-9'><select class='select2-drop' style='width:75%;text-overflow:ellipsis;' id='source-projects' name='projectlist[]'><option value=''></option>";
         foreach($projectList as $projectID => $projectName) {
             if ($projectID != "" && $projectName != "") {
                 echo "<option value='$projectID'>$projectName</option>";
@@ -220,7 +220,7 @@ echo $returnHTML;
             divHTML = "<div style='col-md-12'><div>Trigger notification only if REDCap project is in Production Status</div><div><input type='radio' name='<?= $module::PROJ_PROD_SETTING ?>' value='0' <?= ($notifSettings[$module::PROJ_PROD_SETTING] == "0" ? "checked" : "") ?>>No<br/><input type='radio' name='<?= $module::PROJ_PROD_SETTING ?>' value='1' <?= ($notifSettings[$module::PROJ_PROD_SETTING] == "1" ? "checked" : "") ?>>Yes</div></div>";
         }
         else if (selectValue == "2") {
-            divHTML = generateRepeatableFormList();
+            divHTML = generateRepeatableFormList('Form to Monitor for New Fields (leave blank to monitor all forms):');
             divHTML += "<div style='col-md-12'><div>Trigger notification only if REDCap project is in Production Status</div><div><input type='radio' name='<?= $module::PROJ_PROD_SETTING ?>' value='0' <?= ($notifSettings[$module::PROJ_PROD_SETTING] == "0" ? "checked" : "") ?>>No<br/><input type='radio' name='<?= $module::PROJ_PROD_SETTING ?>' value='1' <?= ($notifSettings[$module::PROJ_PROD_SETTING] == "1" ? "checked" : "") ?>>Yes</div></div>";
         }
         else if (selectValue == "3") {
@@ -239,7 +239,11 @@ echo $returnHTML;
             divHTML = generateRepeatableFieldList('field_repeat','fields_','<?= $module::FIELD_NAME_SETTING ?>','field_options','<?= $module::FIELD_VALUE_REQUIRED ?>','Field Name to Trigger Notification: ');
             divHTML += "<div class='col-md-12' id='<?= $module::RECORD_COUNT_SETTING ?>' style='padding-top:10px;'><span class='notif' style='display:inline-block;'>Records to Match to Trigger Notification</span><span class='notif' style='display:inline-block;'><input type='text' name='record_count' value='<?= $notifSettings['record_count'] ?>' /></span></div>";
         }
+        else if (selectValue == "8") {
+            divHTML = generateRepeatableFormList('Form to Monitor (leave blank to monitor all forms):');
+        }
         divHTML += "<div class='col-md-12' style='padding-top:10px;'><span class='notif' style='display:inline-block;'>Days Until Notification is Past Due (leave blank if not applicable)</span><span class='notif' style='display:inline-block;'><input type='text' id='<?= $module::PASTDUE_SETTING ?>' name='<?= $module::PASTDUE_SETTING ?>' /></span></div>";
+        divHTML += "<div style='padding: 3px;background-color:lightgreen;border:1px solid;'><span class='notif' style='display:inline-block;'>Unique User Notifications? </span><span class='notif' style='display:inline-block;'><input name='<?= $module::UNIQUE_USER_SETTING ?>' id='<?= $module::UNIQUE_USER_SETTING ?>' type='radio' value='0' <?= ($notifSettings[$module::UNIQUE_USER_SETTING] == "0" ? "checked" : "") ?>/>No<br/><input name='<?= $module::UNIQUE_USER_SETTING ?>' id='<?= $module::UNIQUE_USER_SETTING ?>' type='radio' value='1' <?= ($notifSettings[$module::UNIQUE_USER_SETTING] == "1" ? "checked" : "") ?>/>Yes</span></div>";
         $('#'+destination).html(divHTML).css({'width':'auto','height':'auto'});
         loadNotifSettings();
         convertSelect2();
@@ -278,21 +282,22 @@ echo $returnHTML;
         $('#'+destination).html(returnHTML);
     }
 
-    function addProjectDiv(divid) {
-        var optionText = "<div class='col-md-3'></div><div class='col-md-9'><select style='width:75%;text-overflow:ellipsis;' name='projectlist[]'><option value=''></option>";
-        jQuery('#'+divid).find('option').each(function () {
+    function addProjectDiv(divid,projectlistdiv) {
+        var optionText = "<div class='col-md-3'></div><div class='col-md-9'><select class='select2-drop' style='width:75%;text-overflow:ellipsis;' name='projectlist[]'>";
+        jQuery('#'+projectlistdiv).find('option').each(function () {
             optionText += "<option value='"+jQuery(this).val()+"'>"+jQuery(this).text()+"</option>";
         })
         optionText += "</select></div>";
         jQuery('#'+divid).append(optionText);
+        convertSelect2();
     }
 
     function generateRepeatableFieldList(repeatDivID, fieldListID, selectFieldID, fieldOptionsID, fieldOptionsRequired, fieldLabel) {
         return "<div class='col-md-11' id='"+repeatDivID+"'>"+generateFieldList(fieldListID,selectFieldID,fieldOptionsID,fieldOptionsRequired,fieldLabel)+"</div><div class='col-md-1'><button id='add_"+repeatDivID+"' onclick='addNewDiv(\""+repeatDivID+"\",function() { return generateFieldList(\""+fieldListID+"\",\""+selectFieldID+"\",\""+fieldOptionsID+"\",\""+fieldOptionsRequired+"\",\""+fieldLabel+"\") });' type='button'>Add Field</button></div>";
     }
 
-    function generateRepeatableFormList() {
-        return "<div class='col-md-11' id='form_repeat'>"+generateFormList()+"</div><div class='col-md-1'><button id='add_form' onclick='addNewDiv(\"form_repeat\",generateFormList);' type='button'>Add Form</button></div>";
+    function generateRepeatableFormList(label) {
+        return "<div class='col-md-11' id='form_repeat'>"+generateFormList(label)+"</div><div class='col-md-1'><button id='add_form' onclick='addNewDiv(\"form_repeat\",generateFormList);' type='button'>Add Form</button></div>";
     }
 
     function generateFieldList(fieldListID, selectFieldID, fieldOptionsID, fieldOptionsRequired, fieldLabel) {
@@ -318,9 +323,9 @@ echo $returnHTML;
         return returnHTML;
     }
 
-    function generateFormList() {
+    function generateFormList(label = "Form to Monitor for New Fields (leave blank to monitor all forms):") {
         var count = getNewCount('forms_');
-        var returnHTML = "<div id='forms_"+count+"'><table style='border: 1px solid'><tr><td><button type='button' onclick='removeDiv(\"forms_"+count+"\");'>X</button></td><td style='background-color:lightblue;'><span class='notif'>Form to Monitor for New Fields (leave blank to monitor all forms): </span></td><td><span class='notif'><select class='select2-drop' style='width:350px;text-overflow: ellipsis;' id='<?= $module::FORM_NAME_SETTING ?>_"+count+"' name='<?= $module::FORM_NAME_SETTING ?>[]'><option value=''></option>";
+        var returnHTML = "<div id='forms_"+count+"'><table style='border: 1px solid'><tr><td><button type='button' onclick='removeDiv(\"forms_"+count+"\");'>X</button></td><td style='background-color:lightblue;'><span class='notif'>"+label+"</span></td><td><span class='notif'><select class='select2-drop' style='width:350px;text-overflow: ellipsis;' id='<?= $module::FORM_NAME_SETTING ?>_"+count+"' name='<?= $module::FORM_NAME_SETTING ?>[]'><option value=''></option>";
 
         for (var key in projectFormList) {
             returnHTML += "<option value='"+key+"'>"+projectFormList[key]+"</option>";
