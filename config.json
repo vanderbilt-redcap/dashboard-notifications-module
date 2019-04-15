@@ -13,6 +13,8 @@
 
   "description": "Module for generating and managing notifications for display in external dashboards or report pages. Requires a REDCap project to store notifcations.",
 
+  "framework-version": 2,
+
   "permissions": [
     "select_data",
     "redcap_module_link_check_display",
@@ -85,6 +87,12 @@
       "repeatable": false
     },
     {
+      "key": "schedule-json",
+      "name": "Text field that stores JSON string to define schedule behavior",
+      "type":"text",
+      "repeatable": false
+    },
+    {
       "key": "role-list",
       "name": "Field that tracks user roles that need to get the notification",
       "type":"text",
@@ -127,10 +135,25 @@
       "repeatable": false
     },
     {
+      "key": "display-date",
+      "name": "Date field that contains when a notification should be displayed to user",
+      "type":"text",
+      "repeatable": false
+    },
+    {
       "key": "unique-user",
       "name": "Field to Store Unique User Assignment",
       "type":"text",
       "repeatable": false
+    }
+  ],
+  "crons": [
+    {
+      "cron_name": "scheduledNotifications",
+      "cron_description": "Daily cron to generate new notifications",
+      "method": "scheduledNotifications",
+      "cron_frequency": "3600",
+      "cron_max_run_time": "300"
     }
   ]
 }

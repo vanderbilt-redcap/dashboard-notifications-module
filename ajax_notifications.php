@@ -47,6 +47,7 @@ if (isset($_POST['notif_record']) && is_numeric($projectID) && is_numeric($notif
                             $notifName = $fieldData[$module->getProjectSetting("notif-name")];
                         }
                         $notifSettings = json_decode($fieldData[$module->getProjectSetting("access-json")],true);
+                        $scheduleSettings = json_decode($fieldData[$module->getProjectSetting("schedule-json")],true);
                         $notifType = $fieldData[$module->getProjectSetting("notif-type")];
                         $notifAlert = $fieldData[$module->getProjectSetting("notif-alert")];
                         $notifClass = $fieldData[$module->getProjectSetting("notif-class")];
@@ -138,6 +139,13 @@ if (isset($_POST['notif_record']) && is_numeric($projectID) && is_numeric($notif
     $returnHTML .= "</tr></table></div></div>
         <div><h3><a style='display:inline-block;padding-left:20px;' href='#'>Fields to Track Users to Resolve This Notification</a></h3>
             <div id='".$module::ROLES_RESOLVE."_".$module::ROLES_FIELDS."'></div>
+        </div>
+        <div><h3><a style='display:inline-block;padding-left:20px;' href='#'>Schedule for Repeated Notification Generation</a></h3>
+            <div id='schedule_settings'>
+                <div class='col-md-12'>Set Start Date: <input type='text' name='".$module::SCHEDULE_START_DATE."' id='".$module::SCHEDULE_START_DATE."' value='".$scheduleSettings[$module::SCHEDULE_START_DATE]."'/> <input type='text' name='".$module::START_TIMEFRAME."' id='".$module::START_TIMEFRAME."' value='".$scheduleSettings[$module::START_TIMEFRAME]."' /> <span style='font-size:75%;'>(Days, weeks, months, or a field name only valid options)</span></div>
+                <div class='col-md-12'>Set End Date: <input type='text' name='".$module::SCHEDULE_END_DATE."' id='".$module::SCHEDULE_END_DATE."' value='".$scheduleSettings[$module::SCHEDULE_END_DATE]."'/> <input type='text' name='".$module::END_TIMEFRAME."' id='".$module::END_TIMEFRAME."' value='".$scheduleSettings[$module::END_TIMEFRAME]."' /> <span style='font-size:75%;'>(Days, weeks, months, or a field name only valid options)</span></div>
+                <div class='col-md-12'>Delay Between Notifications: <input type='text' name='".$module::SCHEDULE_COUNT."' id='".$module::SCHEDULE_COUNT."' value='".$scheduleSettings[$module::SCHEDULE_COUNT]."'/> <input type='text' name='".$module::SCHEDULE_TIMEFRAME."' id='".$module::SCHEDULE_TIMEFRAME."' value='".$scheduleSettings[$module::SCHEDULE_TIMEFRAME]."' /> <span style='font-size:75%;'>(Days, weeks, months, or a field name only valid options)</span></div>
+            </div>
         </div>
         <div><h3><a style='display:inline-block;padding-left:20px;' href='#'>Notification Settings</a></h3>
                     <div id='notif_settings'>
@@ -242,7 +250,8 @@ echo $returnHTML;
         else if (selectValue == "8") {
             divHTML = generateRepeatableFormList('Form to Monitor (leave blank to monitor all forms):');
         }
-        divHTML += "<div class='col-md-12' style='padding-top:10px;'><span class='notif' style='display:inline-block;'>Days Until Notification is Past Due (leave blank if not applicable)</span><span class='notif' style='display:inline-block;'><input type='text' id='<?= $module::PASTDUE_SETTING ?>' name='<?= $module::PASTDUE_SETTING ?>' /></span></div>";
+        divHTML += "<div class='col-md-12' style='padding-top:10px;'><span class='notif' style='display:inline-block;'>Time to Delay Notification (leave blank if not applicable)? </span><span class='notif' style='display:inline-block;'><input name='<?= $module::DISPLAY_DATE_SETTING ?>' id='<?= $module::DISPLAY_DATE_SETTING ?>' type='text' /> <input type='text' id='<?= $module::DISPLAY_TIMEFRAME ?>' name='<?= $module::DISPLAY_TIMEFRAME ?> value='<?= $notifSettings[$module::DISPLAY_TIMEFRAME] ?>' /></span> <span style='font-size:75%;'>(Days, weeks, months, or a field name only valid options)</span></div>";
+        divHTML += "<div class='col-md-12' style='padding-top:10px;'><span class='notif' style='display:inline-block;'>Time Until Notification is Past Due (leave blank if not applicable)</span><span class='notif' style='display:inline-block;'><input type='text' id='<?= $module::PASTDUE_SETTING ?>' name='<?= $module::PASTDUE_SETTING ?>' /> <input type='text' id='<?= $module::PASTDUE_TIMEFRAME ?>' name='<?= $module::PASTDUE_TIMEFRAME ?>' value='<?= $notifSettings[$module::PASTDUE_TIMEFRAME] ?>' /></span><span style='font-size:75%;'>(Days, weeks, months, or a field name only valid options)</span></div>";
         divHTML += "<div style='padding: 3px;background-color:lightgreen;border:1px solid;'><span class='notif' style='display:inline-block;'>Unique User Notifications? </span><span class='notif' style='display:inline-block;'><input name='<?= $module::UNIQUE_USER_SETTING ?>' id='<?= $module::UNIQUE_USER_SETTING ?>' type='radio' value='0' <?= ($notifSettings[$module::UNIQUE_USER_SETTING] == "0" ? "checked" : "") ?>/>No<br/><input name='<?= $module::UNIQUE_USER_SETTING ?>' id='<?= $module::UNIQUE_USER_SETTING ?>' type='radio' value='1' <?= ($notifSettings[$module::UNIQUE_USER_SETTING] == "1" ? "checked" : "") ?>/>Yes</span></div>";
         $('#'+destination).html(divHTML).css({'width':'auto','height':'auto'});
         loadNotifSettings();
@@ -405,6 +414,7 @@ echo $returnHTML;
             }
         ?>
         $('#<?= $module::PASTDUE_SETTING ?>').val('<?= $notifSettings[$module::PASTDUE_SETTING] ?>');
+        $('#<?= $module::DISPLAY_DATE_SETTING ?>').val('<?= $notifSettings[$module::DISPLAY_DATE_SETTING] ?>');
     }
 
     $(document).ready(function() {
