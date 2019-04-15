@@ -1264,7 +1264,7 @@ $this->scheduledNotifications();
      * Function called by the CRON to generate scheduled notifications
      * @throws \Exception
      */
-    function scheduledNotifications() {
+    function schedulednotifications() {
         // Only want this to run once a day, preferably when no one is working in the system.
         /*$currentHour = date('H');
         if ($currentHour != "02") return;*/
@@ -1299,9 +1299,9 @@ $this->scheduledNotifications();
                     $instanceCount[] = 1;
                 }
                 $currentDate = date("Y-m-d");
-echo "<pre>";
+/*echo "<pre>";
 print_r($projectData);
-echo "</pre>";
+echo "</pre>";*/
                 foreach ($notifications as $recordID => $eventData) {
                     $scheduling = json_decode($eventData[$notifEventID][$scheduledField], true);
                     $access = json_decode($eventData[$notifEventID][$this->getProjectSetting('access-json', $projectID)], true);

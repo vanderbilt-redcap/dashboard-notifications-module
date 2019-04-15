@@ -149,7 +149,7 @@
   ],
   "crons": [
     {
-      "cron_name": "scheduledNotifications",
+      "cron_name": "schedulednotifications",
       "cron_description": "Daily cron to generate new notifications",
       "method": "scheduledNotifications",
       "cron_frequency": "3600",
