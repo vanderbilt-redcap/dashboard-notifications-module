@@ -901,7 +901,7 @@ $this->scheduledNotifications();
                 if (array_key_exists(self::FIELD_NAME_SETTING, $jsonOptions) && array_key_exists(self::RECORD_COUNT_SETTING, $jsonOptions) && !in_array($recordId, $jsonOptions['record_history'])) {
                     $jsonOptions['record_history'][] = $recordId;
                     $matched = false;
-                    $this->checkRecordFields($project, $logEntry, $jsonOptions[self::FIELD_NAME_SETTING], function ($recordId, $formName=null, $instance=null) use ($recordId,$projectEvent,$jsonOptions,$notification, $user, $userList, $pastDue, $displayDate, $notificationMessage) {
+                    $this->checkRecordFields($project, $logEntry, $jsonOptions[self::FIELD_NAME_SETTING], function ($recordId, $formName=null, $instance=null) use ($projectEvent,$jsonOptions,$notification, $user, $userList, $pastDue, $displayDate, $notificationMessage) {
                         //$matched = true;
                         \REDCap::saveData($this->notificationProject->project_id, 'array', [$recordId => [$projectEvent => array($this->getProjectSetting("access-json") => json_encode($jsonOptions))]],'overwrite');
                         if (count($jsonOptions['record_history']) % $jsonOptions[self::RECORD_COUNT_SETTING] === 0) {
