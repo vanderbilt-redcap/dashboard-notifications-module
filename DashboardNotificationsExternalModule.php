@@ -68,7 +68,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         $projectEvent = $project->firstEventId;
         $recordData = \REDCap::getData($project_id, 'array', array(), array(), array(), array(), false, false, false);
         $testDate = $this->processDateLogic("[today_date] + 15",$recordData,"weeks");*/
-$this->scheduledNotifications();
+        //$this->scheduledNotifications();
         if ($notificationProject) {
             $this->notificationProject = new \Project($notificationProject);
 
@@ -191,7 +191,8 @@ $this->scheduledNotifications();
         if (isset($recordData[$timeframe]) && $recordData[$timeframe] != "") {
             $timeframe = $recordData[$timeframe];
         }
-        if (!in_array(strtolower($timeframe),array("days","weeks","months"))) return "";
+        $timeframe = strtolower($timeframe);
+        if (!in_array($timeframe,array("days","weeks","months"))) return "";
 
         if (is_numeric($string) && $string !== "") {
             return " + $string ".strtolower($timeframe);
@@ -236,7 +237,11 @@ $this->scheduledNotifications();
             }
         }
 
-        return $interval;
+        $prepend = "+";
+        if (intval($interval) < 0) {
+            $prepend = "-";
+        }
+        return $prepend.$interval." ".$timeframe;
         //return '';
     }
 
@@ -870,7 +875,7 @@ $this->scheduledNotifications();
                 break;
             case 5: //Field Data Check
                 if (array_key_exists(self::FIELD_NAME_SETTING, $jsonOptions)) {
-                    $this->checkRecordFields($project, $logEntry, $jsonOptions[self::FIELD_NAME_SETTING], function ($recordId, $formName=null, $instance=null) use ($notification, $user, $userList, $pastDue, $displayDate, $notificationMessage) {
+                    $this->checkRecordFields($project, $logEntry, $jsonOptions[self::FIELD_NAME_SETTING], function ($recordId, $formName=null, $instance=null) use ($notification, $user, $userList, $pastDue, $displayDate, &$notificationMessage) {
                         $notificationMessage['record_id'] = $recordId;
                         $notificationMessage['form_name'] = $formName;
                         $notificationMessage['instance'] = $instance;
@@ -884,7 +889,7 @@ $this->scheduledNotifications();
                 break;
             case 6: //E-signature Required
                 if (array_key_exists(self::FIELD_NAME_SETTING, $jsonOptions) && array_key_exists(self::PASTDUE_SETTING, $jsonOptions)) {
-                    $this->checkRecordFields($project, $logEntry, $jsonOptions[self::FIELD_NAME_SETTING], function ($recordId, $formName = null, $instance = null) use ($notification, $user, $userList, $pastDue, $displayDate, $notificationMessage) {
+                    $this->checkRecordFields($project, $logEntry, $jsonOptions[self::FIELD_NAME_SETTING], function ($recordId, $formName = null, $instance = null) use ($notification, $user, $userList, $pastDue, $displayDate, &$notificationMessage) {
                         $notificationMessage['record_id'] = $recordId;
                         $notificationMessage['form_name'] = $formName;
                         $notificationMessage['instance'] = $instance;
@@ -901,7 +906,7 @@ $this->scheduledNotifications();
                 if (array_key_exists(self::FIELD_NAME_SETTING, $jsonOptions) && array_key_exists(self::RECORD_COUNT_SETTING, $jsonOptions) && !in_array($recordId, $jsonOptions['record_history'])) {
                     $jsonOptions['record_history'][] = $recordId;
                     $matched = false;
-                    $this->checkRecordFields($project, $logEntry, $jsonOptions[self::FIELD_NAME_SETTING], function ($recordId, $formName=null, $instance=null) use ($projectEvent,$jsonOptions,$notification, $user, $userList, $pastDue, $displayDate, $notificationMessage) {
+                    $this->checkRecordFields($project, $logEntry, $jsonOptions[self::FIELD_NAME_SETTING], function ($recordId, $formName=null, $instance=null) use ($projectEvent,$jsonOptions,$notification, $user, $userList, $pastDue, $displayDate, &$notificationMessage) {
                         //$matched = true;
                         \REDCap::saveData($this->notificationProject->project_id, 'array', [$recordId => [$projectEvent => array($this->getProjectSetting("access-json") => json_encode($jsonOptions))]],'overwrite');
                         if (count($jsonOptions['record_history']) % $jsonOptions[self::RECORD_COUNT_SETTING] === 0) {
@@ -938,11 +943,7 @@ $this->scheduledNotifications();
                 break;
         }
 
-        if (!empty($notificationMessage['message'])) {
-            return $notificationMessage;
-            //$this->saveNotification($notification, $logEntry['user'], $userList, $notificationMessage, $pastDue, $displayDate);
-        }
-        return "";
+        return $notificationMessage;
     }
 
     function getUsefulData($recordData,$eventId,$instance) {
@@ -1146,13 +1147,14 @@ $this->scheduledNotifications();
         //creates an array that mirrors the structure of REDCap getData, but with booleans for all the field values which indicates which fields matched the provided values to check against
         //Reasoning is to possibly switch the functionality from AND only to OR, so we'd need to preserve all the individual matches
         $matchCount = 0;
+
         foreach ($fields as $fieldName => $checkValues) {
             $fieldMeta = $project->metadata[$fieldName];
             $isCheckbox = $fieldMeta['element_type'] === 'checkbox';
             if (!$project->isRepeatingForm($eventId,$fieldMeta['form_name']) && array_key_exists($eventId, $recordData)) {
                 $actualValue = $recordData[$eventId][$fieldName];
                 $matches[$eventId][$fieldName] = $this->checkSingleValue($checkValues, $actualValue, $isCheckbox);
-                if ($matches[$eventId][$fieldName] === 1) {
+                if ($matches[$eventId][$fieldName] === true) {
                     $matchCount++;
                 }
             } else if ($project->isRepeatingForm($eventId,$fieldMeta['form_name']) && array_key_exists($eventId, $recordData['repeat_instances'])) {
@@ -1161,7 +1163,7 @@ $this->scheduledNotifications();
                         if ($instanceNum != $instance) continue;
                         $actualValue = $instanceFields[$fieldName];
                         $matches['repeat_instances'][$eventId][$form][$instanceNum][$fieldName] = $this->checkSingleValue($checkValues, $actualValue, $isCheckbox);
-                        if ($matches['repeat_instances'][$eventId][$form][$instanceNum][$fieldName] === 1) {
+                        if ($matches['repeat_instances'][$eventId][$form][$instanceNum][$fieldName] === true) {
                             $matchCount++;
                         }
                     }
@@ -1279,7 +1281,7 @@ $this->scheduledNotifications();
             $notifications = \REDCap::getData($notificationProject, 'array');
 
             $notificationArray = array();
-            $currentDate = date('Y-m-d');
+            //$currentDate = date('Y-m-d');
             if ($notificationProject != "" && is_numeric($notificationProject) && $scheduledField != "") {
                 $this->notificationProject = new \Project($notificationProject);
                 $notifEventID = $this->notificationProject->firstEventId;
@@ -1351,7 +1353,7 @@ echo "</pre>";*/
                         }
                     }
                     else {
-                        /*foreach ($eventData['repeat_instances'] as $eventID => $instanceEvent) {
+                        foreach ($eventData['repeat_instances'] as $eventID => $instanceEvent) {
                             foreach ($instanceEvent as $formName => $instances) {
                                 foreach ($instances as $instance => $data) {
                                     $context = json_decode($data[$this->getProjectSetting('notif-context', $projectID)]);
@@ -1364,7 +1366,27 @@ echo "</pre>";*/
                                     }
                                 }
                             }
-                        }*/
+                        }
+                        foreach ($notificationArray as $sourceRecordID => $sourceEventData) {
+                            foreach ($sourceEventData as $sourceEventID => $sourceInstanceData) {
+                                foreach ($sourceInstanceData as $sourceInstanceID => $sourceData) {
+                                    $currentRecordData = $this->getUsefulData($projectData[$sourceRecordID],$sourceEventID,$sourceInstanceID);
+                                    $startDate = $this->processDateLogic($scheduling[self::SCHEDULE_START_DATE], $projectData[$sourceRecordID][$dataProject->firstEventId], $scheduling[self::START_TIMEFRAME]);
+                                    $endDate = $this->processDateLogic($scheduling[self::SCHEDULE_END_DATE], $projectData[$sourceRecordID][$dataProject->firstEventId], $scheduling[self::END_TIMEFRAME]);
+                                    $interval = $this->processIntervalString($scheduling[self::SCHEDULE_COUNT],$projectData[$sourceRecordID][$dataProject->firstEventId],$scheduling[self::SCHEDULE_TIMEFRAME]);
+                                    if (strtotime($endDate) < strtotime($currentDate) || strtotime($startDate) > strtotime($currentDate)) continue;
+                                    $examineDate = new \DateTime($sourceData[$this->getProjectSetting('notif-date',$projectID)]);
+                                    $examineDate->modify($interval);
+                                    if (strtotime($examineDate->format('Y-m-d')) > strtotime($currentDate)) continue;
+                                    while (strtotime($examineDate->format('Y-m-d')) <= strtotime($currentDate)) {
+                                        if ($examineDate->format('Y-m-d') == $currentDate) {
+                                            //TODO Create new instance of notification, and user list
+                                        }
+                                        $examineDate->modify($interval);
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
