@@ -160,7 +160,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         if ($date != "" && $this->validateDate($date)) {
 
             $dateTime = date_create($date);
-            while ($startIndex < count($daysAdd) - 1) {
+            while ($startIndex < count($daysAdd)) {
                 /*echo "operator: ".$operators[0][$startIndex-1].", days: ".$daysAdd[$startIndex].", timeframe: $timeframe<br/>";*/
                 date_modify($dateTime,$operators[0][$startIndex-1].' '.$daysAdd[$startIndex].' '.$timeframe);
                 /*foreach ($daysAdd as $dIndex => $dayAdd) {
@@ -745,7 +745,8 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
 
         $notifications = \REDCap::getData($this->notificationProject->project_id,'array', "", array(), $projectEvent, array(), false, false, false);
 
-        $recordData = \REDCap::getData($project->project_id,'array',$recordId,$eventId,array(),false,false,false);
+        $recordData = \REDCap::getData($project->project_id,'array',array($recordId),array(),array($eventId),false,false,false);
+
         $usefulRecordData = $this->getUsefulData($recordData[$recordId],$eventId,$instance);
         /*$usefulRecordData = array();
         if (isset($recordData[$recordId]['repeat_instances'][$eventId])) {
@@ -1237,7 +1238,11 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             $changes[$recordID][$this->getProjectSetting("pastdue-date")] = date("Y-m-d", strtotime($pastDue));
         }
         if ($displayDate != "") {
+            echo "Display date: ".$displayDate."<br/>";
             $changes[$recordID][$this->getProjectSetting("display-date")] = date("Y-m-d", strtotime($displayDate));
+        }
+        else {
+            echo "No display date<br/>";
         }
 
         if (!empty($userList)) {
