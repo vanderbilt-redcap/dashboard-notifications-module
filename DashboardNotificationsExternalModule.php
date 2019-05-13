@@ -1155,7 +1155,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             if (!$project->isRepeatingForm($eventId,$fieldMeta['form_name']) && array_key_exists($eventId, $recordData)) {
                 $actualValue = $recordData[$eventId][$fieldName];
                 $matches[$eventId][$fieldName] = $this->checkSingleValue($checkValues, $actualValue, $isCheckbox);
-                if ($matches[$eventId][$fieldName] === true) {
+                if ($matches[$eventId][$fieldName] > 0) {
                     $matchCount++;
                 }
             } else if ($project->isRepeatingForm($eventId,$fieldMeta['form_name']) && array_key_exists($eventId, $recordData['repeat_instances'])) {
@@ -1164,7 +1164,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
                         if ($instanceNum != $instance) continue;
                         $actualValue = $instanceFields[$fieldName];
                         $matches['repeat_instances'][$eventId][$form][$instanceNum][$fieldName] = $this->checkSingleValue($checkValues, $actualValue, $isCheckbox);
-                        if ($matches['repeat_instances'][$eventId][$form][$instanceNum][$fieldName] === true) {
+                        if ($matches['repeat_instances'][$eventId][$form][$instanceNum][$fieldName] > 0) {
                             $matchCount++;
                         }
                     }
@@ -1238,11 +1238,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             $changes[$recordID][$this->getProjectSetting("pastdue-date")] = date("Y-m-d", strtotime($pastDue));
         }
         if ($displayDate != "") {
-            echo "Display date: ".$displayDate."<br/>";
             $changes[$recordID][$this->getProjectSetting("display-date")] = date("Y-m-d", strtotime($displayDate));
-        }
-        else {
-            echo "No display date<br/>";
         }
 
         if (!empty($userList)) {
