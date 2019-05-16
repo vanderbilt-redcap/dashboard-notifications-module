@@ -814,7 +814,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
 
         $projectEvent = $this->notificationProject->firstEventId;
         $selectedtype = $notification[$projectEvent][$this->getProjectSetting('notif-type')];
-        $jsonOptions = json_decode($notification[$projectEvent][$this->getProjectSetting('access-json')], true);
+        $jsonOptions = array_filter(json_decode($notification[$projectEvent][$this->getProjectSetting('access-json')], true));
 
         $user = $logEntry['user'];
         $recordId        = $logEntry['pk'];
@@ -860,7 +860,8 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             case 3: //New Comment/Data Query
                 //TODO allow for multiple fields
                 $comment = json_decode($logEntry['data_values'], true);
-                if (!array_key_exists(self::FIELD_NAME_SETTING, $jsonOptions) || (array_key_exists(self::FIELD_NAME_SETTING, $jsonOptions) && in_array($comment['field'], $jsonOptions[self::FIELD_NAME_SETTING]))) {
+
+                if (!array_key_exists(self::FIELD_NAME_SETTING,$jsonOptions) || (array_key_exists(self::FIELD_NAME_SETTING, $jsonOptions) && in_array($comment['field'], $jsonOptions[self::FIELD_NAME_SETTING]))) {
                     $notificationMessage['message'] = "Comment added to field {$comment['field']}: {$comment['comment']}";
                     $fieldMetaData = $project->metadata[trim($comment['field'])];
                     $notificationMessage['field'] = $comment['field'];
