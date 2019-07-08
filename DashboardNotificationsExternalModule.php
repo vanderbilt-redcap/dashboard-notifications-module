@@ -550,10 +550,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             }
 
             $recordsObject = new \Records;
-            $resultsave = $recordsObject->saveData($notifProjectID, 'array', [$saveData[$notifProject->table_pk] => [$notifProject->firstEventId => $saveData]],$overwrite);
-            echo "<pre>";
-            print_r($resultsave);
-            echo "</pre>";
+            $recordsObject->saveData($notifProjectID, 'array', [$saveData[$notifProject->table_pk] => [$notifProject->firstEventId => $saveData]],$overwrite);
             if (method_exists($recordsObject,'addRecordToRecordListCache')) {
                 $recordsObject->addRecordToRecordListCache($notifProjectID, $saveData[$notifProject->table_pk], $notifProject->firstArmNum);
             }

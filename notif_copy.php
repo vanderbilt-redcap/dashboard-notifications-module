@@ -26,9 +26,6 @@ if ($projectID != "" && $notifProjectID != "") {
             $postData['record_id'] = $module->getAutoId($notifProjectID);
             $postData['receive_roles_list'] = $module->transferRoleIDsBetweenProjects($_POST['receive_roles_list'],$loopProjectID);
             $postData['resolve_roles_list'] = $module->transferRoleIDsBetweenProjects($_POST['resolve_roles_list'],$loopProjectID);
-            echo "<pre>";
-            print_r($postData);
-            echo "</pre>";
             $module->saveNotifSettings($loopProjectID, $notifProjectID, $postData);
         }
     }
