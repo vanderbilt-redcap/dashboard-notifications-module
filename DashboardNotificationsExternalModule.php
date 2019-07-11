@@ -595,37 +595,44 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
     }
 
     function setModuleOnProject($destProjectID) {
-        $this->disableUserBasedSettingPermissions();
-        $externalModuleId = $this->getModuleID($this->PREFIX);
-        $settingsResult = ExternalModules::getSettings(array($this->PREFIX),array($this->getProjectId()));
+        if (is_numeric($destProjectID)) {
+            $this->disableUserBasedSettingPermissions();
+            $externalModuleId = $this->getModuleID($this->PREFIX);
+            $settingsResult = ExternalModules::getSettings(array($this->PREFIX), array($this->getProjectId()));
 
-        while($row = ExternalModules::validateSettingsRow(db_fetch_assoc($settingsResult))) {
-            $key = $row['key'];
-            $notifSettings[$key] = $row;
-        }
-
-        $currentSettings = array();
-        $sql = "SELECT `key`,`value`
-            FROM redcap_external_module_settings
-            WHERE external_module_id = '$externalModuleId'
-            AND `key`='enabled'
-            AND project_id=$destProjectID";
-        $result = db_query($sql);
-        while ($row = db_fetch_assoc($result)) {
-            $currentSettings[$row['key']] = $row['value'];
-        }
-        if (!isset($currentSettings['enabled']) || $currentSettings['enabled'] == "") {
-            foreach ($notifSettings as $key => $value) {
-                if ($key == "lastEvent") continue;
-                if ($key == 'enabled' && $value['value'] == 1) $value['value'] = "true";
-                $insertsql = "INSERT INTO redcap_external_module_settings (external_module_id,project_id,`key`,`type`,`value`) 
-                  VALUES ($externalModuleId,$destProjectID,'$key','".$value['type']."','".$value['value']."')";
-                //echo "$insertsql<br/>";
-                db_query($insertsql);
-                if ($error = db_error()) {
-                    die($insertsql . ': ' . $error);
-                }
+            while ($row = ExternalModules::validateSettingsRow(db_fetch_assoc($settingsResult))) {
+                $key = $row['key'];
+                $notifSettings[$key] = $row;
             }
+
+            ExternalModules::enableForProject($this->PREFIX,$this->VERSION,$destProjectID);
+            foreach ($notifSettings as $key => $value) {
+                $this->setProjectSetting($key,$value,$destProjectID);
+            }
+
+            /*$currentSettings = array();
+            $sql = "SELECT `key`,`value`
+                FROM redcap_external_module_settings
+                WHERE external_module_id = '$externalModuleId'
+                AND `key`='enabled'
+                AND project_id=$destProjectID";
+            $result = db_query($sql);
+            while ($row = db_fetch_assoc($result)) {
+                $currentSettings[$row['key']] = $row['value'];
+            }
+            if (!isset($currentSettings['enabled']) || $currentSettings['enabled'] == "") {
+                foreach ($notifSettings as $key => $value) {
+                    if ($key == "lastEvent") continue;
+                    if ($key == 'enabled' && $value['value'] == 1) $value['value'] = "true";
+                    $insertsql = "INSERT INTO redcap_external_module_settings (external_module_id,project_id,`key`,`type`,`value`)
+                      VALUES ($externalModuleId,$destProjectID,'$key','".$value['type']."','".$value['value']."')";
+                    //echo "$insertsql<br/>";
+                    db_query($insertsql);
+                    if ($error = db_error()) {
+                        die($insertsql . ': ' . $error);
+                    }
+                }
+            }*/
         }
     }
 
