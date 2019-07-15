@@ -146,14 +146,5 @@
       "type":"text",
       "repeatable": false
     }
-  ],
-  "crons": [
-    {
-      "cron_name": "schedulednotifications",
-      "cron_description": "Daily cron to generate new notifications",
-      "method": "scheduledNotifications",
-      "cron_frequency": "3600",
-      "cron_max_run_time": "300"
-    }
   ]
 }
