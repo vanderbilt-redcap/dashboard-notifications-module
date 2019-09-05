@@ -34,7 +34,8 @@ if ($projectID != "" && $notifProjectID != "") {
     $notifMetaData = $notifProject->metadata;
     $notifClassChoice = $module->getChoicesFromMetaData($notifMetaData[$module->getProjectSetting("notif-class")]['element_enum']);
     $existingNotifs = $module->getNotifications($notifProjectID);
-    usort($existingNotifs,function ($a,$b) { global $module,$notifEventID; return strcmp($a[$notifEventID][$module->getProjectSetting('notif-class')]." - ".$a[$notifEventID][$module->getProjectSetting('notif-name')], $b[$notifEventID][$module->getProjectSetting('notif-class')]." - ".$b[$notifEventID][$module->getProjectSetting('notif-name')]);});
+
+    uasort($existingNotifs,function ($a,$b) { global $module,$notifEventID; return strcmp($a[$notifEventID][$module->getProjectSetting('notif-class')]." - ".$a[$notifEventID][$module->getProjectSetting('notif-name')], $b[$notifEventID][$module->getProjectSetting('notif-class')]." - ".$b[$notifEventID][$module->getProjectSetting('notif-name')]);});
 
     echo "<div class='col-md-12' style='padding:0;'>
         <form method='post' action='".$module->getUrl('notif_copy.php')."'>
