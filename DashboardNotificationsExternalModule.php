@@ -599,16 +599,17 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             $this->disableUserBasedSettingPermissions();
             $externalModuleId = $this->getModuleID($this->PREFIX);
             $settingsResult = ExternalModules::getSettings(array($this->PREFIX), array($this->getProjectId()));
-
             while ($row = ExternalModules::validateSettingsRow(db_fetch_assoc($settingsResult))) {
                 $key = $row['key'];
                 $notifSettings[$key] = $row;
             }
-
-            ExternalModules::enableForProject($this->PREFIX,$this->VERSION,$destProjectID);
+echo "<pre>";
+            print_r($notifSettings);
+            echo "</pre>";
+            /*ExternalModules::enableForProject($this->PREFIX,$this->VERSION,$destProjectID);
             foreach ($notifSettings as $key => $value) {
                 $this->setProjectSetting($key,$value,$destProjectID);
-            }
+            }*/
 
             /*$currentSettings = array();
             $sql = "SELECT `key`,`value`
