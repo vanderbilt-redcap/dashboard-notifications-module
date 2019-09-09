@@ -22,11 +22,11 @@ if ($projectID != "" && $notifProjectID != "") {
 
         foreach ($_POST['projectlist'] as $loopProjectID) {
             $module->setModuleOnProject($loopProjectID);
-            /*$postData = $_POST;
+            $postData = $_POST;
             $postData['record_id'] = $module->getAutoId($notifProjectID);
             $postData['receive_roles_list'] = $module->transferRoleIDsBetweenProjects($_POST['receive_roles_list'],$loopProjectID);
             $postData['resolve_roles_list'] = $module->transferRoleIDsBetweenProjects($_POST['resolve_roles_list'],$loopProjectID);
-            $module->saveNotifSettings($loopProjectID, $notifProjectID, $postData);*/
+            $module->saveNotifSettings($loopProjectID, $notifProjectID, $postData);
         }
     }
     $notifProject = new \Project($notifProjectID);

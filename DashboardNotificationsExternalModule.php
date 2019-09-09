@@ -603,13 +603,11 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
                 $key = $row['key'];
                 $notifSettings[$key] = $row;
             }
-echo "<pre>";
-            print_r($notifSettings);
-            echo "</pre>";
-            /*ExternalModules::enableForProject($this->PREFIX,$this->VERSION,$destProjectID);
-            foreach ($notifSettings as $key => $value) {
-                $this->setProjectSetting($key,$value,$destProjectID);
-            }*/
+
+            ExternalModules::enableForProject($this->PREFIX,$this->VERSION,$destProjectID);
+            foreach ($notifSettings as $key => $details) {
+                $this->setProjectSetting($key,$details['value'],$destProjectID);
+            }
 
             /*$currentSettings = array();
             $sql = "SELECT `key`,`value`
