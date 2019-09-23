@@ -1256,6 +1256,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
                 }
                 $firstuser = false;
                 $changes[$recordID]['redcap_repeat_instance'] = $instance;
+                $changes[$recordID]['redcap_repeat_instrument'] = $notifForm;
                 $changes[$recordID][$this->getProjectSetting('unique-user')] = $user;
 
                 $result = \REDCap::saveData($this->notificationProject->project_id, 'json', json_encode($changes), 'overwrite');
@@ -1263,6 +1264,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         }
         else {
             $changes[$recordID]['redcap_repeat_instance'] = $instance;
+            $changes[$recordID]['redcap_repeat_instrument'] = $notifForm;
             $result = \REDCap::saveData($this->notificationProject->project_id, 'json', json_encode($changes), 'overwrite');
         }
 
