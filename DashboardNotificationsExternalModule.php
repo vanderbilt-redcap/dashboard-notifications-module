@@ -550,7 +550,10 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             }
 
             $recordsObject = new \Records;
-            $recordsObject->saveData($notifProjectID, 'array', [$saveData[$notifProject->table_pk] => [$notifProject->firstEventId => $saveData]],$overwrite);
+            $saveResult = $recordsObject->saveData($notifProjectID, 'array', [$saveData[$notifProject->table_pk] => [$notifProject->firstEventId => $saveData]],$overwrite);
+            if (!empty($saveResult['errors'])) {
+                throw new \Exception("Error on creating notification: ".$saveResult['errors']);
+            }
             if (method_exists($recordsObject,'addRecordToRecordListCache')) {
                 $recordsObject->addRecordToRecordListCache($notifProjectID, $saveData[$notifProject->table_pk], $notifProject->firstArmNum);
             }
@@ -1268,6 +1271,9 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             $result = \REDCap::saveData($this->notificationProject->project_id, 'json', json_encode($changes), 'overwrite');
         }
 
+        if (!empty($result['errors'])) {
+            throw new \Exception("Error on notification creation: ".$result['errors']);
+        }
         /*$notification->updateDetails($changes);
         $notification->getDetails();*/
     }
