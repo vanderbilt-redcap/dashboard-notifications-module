@@ -264,6 +264,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         return $interval;
     }
 
+    //TODO This function doesn't handle multiples of the same operator properly!
     function parseLogicString($string) {
         preg_match_all("/\[(.*?)\]/", $string, $matchRegEx);
         preg_match_all('/[+*\/-]/', $string, $matches);
