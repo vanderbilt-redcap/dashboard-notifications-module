@@ -264,7 +264,6 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         return $interval;
     }
 
-    //TODO This function doesn't handle multiples of the same operator properly!
     function parseLogicString($string) {
         preg_match_all("/\[(.*?)\]/", $string, $matchRegEx);
         preg_match_all('/[+*\/-]/', $string, $matches);
@@ -275,9 +274,9 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
 
         $daysAdd = array();
         if (isset($matches[0]) && !empty($matches[0])) {
-            $lastPosition = "";
+            $lastPosition = 0;
             foreach ($matches[0] as $index => $operator) {
-                $thisPosition = strpos($string, $matches[0][$index]);
+                $thisPosition = strpos($string, $matches[0][$index],$lastPosition);
                 if ($index == 0) {
                     $daysAdd[$index] = trim(substr($string,0,$thisPosition));
                 } else {
