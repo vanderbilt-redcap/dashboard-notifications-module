@@ -10,6 +10,7 @@ namespace Vanderbilt\DashboardNotificationsExternalModule;
 
 use ExternalModules\AbstractExternalModule;
 use ExternalModules\ExternalModules;
+use mysql_xdevapi\Exception;
 
 class DashboardNotificationsExternalModule extends AbstractExternalModule
 {
@@ -659,6 +660,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
 
         if ($error = db_error()) {
             die($sql . ': ' . $error);
+            throw new \Exception("Error: ".$error." trying to run the following SQL statement: ".$sql);
         }
 
         //echo "After Project ID, Time, and Description Log Check: ".time()."<br/>";
