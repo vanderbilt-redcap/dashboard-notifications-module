@@ -659,7 +659,6 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         $q   = db_query($sql);
 
         if ($error = db_error()) {
-            die($sql . ': ' . $error);
             throw new \Exception("Error: ".$error." trying to run the following SQL statement: ".$sql);
         }
 
