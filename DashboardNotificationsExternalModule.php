@@ -662,7 +662,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
                   AND  event in ('".implode("','",array_values($this->eventTypes))."')
                   AND description IN ('".implode("','",array_keys($this->notificationTypes))."')
                   ORDER BY ts DESC";
-        echo "$sql<br/>";
+        //echo "$sql<br/>";
         $q   = db_query($sql);
 
         if ($error = db_error()) {
