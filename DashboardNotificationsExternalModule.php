@@ -56,6 +56,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         "Add user"                          => [4],
         "Save e-signature"                  => [8]
     ];
+    private $eventTypes = ['UPDATE','INSERT','DELETE','SELECT','ERROR','LOGIN','LOGOUT','OTHER','DATA_EXPORT','DOC_UPLOAD','DOC_DELETE','MANAGE','LOCK_RECORD','ESIGNATURE'];
 
     function hook_every_page_top($project_id)
     {
@@ -650,12 +651,18 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             $lastEvent = date("YmdHis");
         }
         //echo "Started Project ID, Time, and Description Log Check: ".time()."<br/>";
-        $sql = "SELECT * FROM redcap_log_event 
+        /*$sql = "SELECT * FROM redcap_log_event
                   WHERE project_id = {$project->project_id}
                   AND ts > $lastEvent
                   AND description IN ('".implode("','",array_keys($this->notificationTypes))."')
+                  ORDER BY ts DESC";*/
+        $sql = "SELECT user,pk,event_id,sql_log,event,ts,description,data_values FROM redcap_log_event use index (ts)
+                  WHERE project_id = {$project->project_id}
+                  AND ts > $lastEvent
+                  AND  event in ('".implode("','",array_values($this->eventTypes))."')
+                  AND description IN ('".implode("','",array_keys($this->notificationTypes))."')
                   ORDER BY ts DESC";
-        //echo "$sql<br/>";
+        echo "$sql<br/>";
         $q   = db_query($sql);
 
         if ($error = db_error()) {
