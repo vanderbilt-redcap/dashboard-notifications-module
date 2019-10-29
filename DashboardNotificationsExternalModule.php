@@ -56,7 +56,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         "Add user"                          => [4],
         "Save e-signature"                  => [8]
     ];
-    private $eventTypes = ['UPDATE','INSERT','DELETE','SELECT','ERROR','LOGIN','LOGOUT','OTHER','DATA_EXPORT','DOC_UPLOAD','DOC_DELETE','MANAGE','LOCK_RECORD','ESIGNATURE'];
+    private $eventTypes = ['UPDATE','INSERT','DELETE','SELECT','OTHER','DATA_EXPORT','DOC_UPLOAD','DOC_DELETE','MANAGE','LOCK_RECORD','ESIGNATURE'];
 
     function hook_every_page_top($project_id)
     {
