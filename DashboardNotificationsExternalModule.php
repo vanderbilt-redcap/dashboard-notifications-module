@@ -56,7 +56,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         "Add user"                          => [4],
         "Save e-signature"                  => [8]
     ];
-    private $eventTypes = ['UPDATE','INSERT','DELETE','SELECT','OTHER','DATA_EXPORT','DOC_UPLOAD','DOC_DELETE','MANAGE','LOCK_RECORD','ESIGNATURE'];
+    private $eventTypes = ['UPDATE','INSERT','DELETE','SELECT','OTHER','DATA_EXPORT','MANAGE','LOCK_RECORD','ESIGNATURE'];
 
     function hook_every_page_top($project_id)
     {
@@ -650,6 +650,9 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         if ($lastEvent == "") {
             $lastEvent = date("YmdHis");
         }
+        elseif (strtotime("now") - strtotime($lastEvent) < 300) {
+            return $lastEvent;
+        }
         //echo "Started Project ID, Time, and Description Log Check: ".time()."<br/>";
         /*$sql = "SELECT * FROM redcap_log_event
                   WHERE project_id = {$project->project_id}
@@ -673,9 +676,9 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         $rawData   = [];
         while ($row = db_fetch_assoc($q)) {
             $rawData[] = $row;
-            if ($lastEvent < $row['ts']) {
+            /*if ($lastEvent < $row['ts']) {
                 $lastEvent = $row['ts'];
-            }
+            }*/
 
             $descriptions[$row['description']] = $row;
             if (array_key_exists($row['description'], $this->notificationTypes)) {
@@ -683,7 +686,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             }
         }
         //echo "After all checks: ".time()."<br/>";
-        return $lastEvent;
+        return date("YmdHis");
     }
 
     /* All notifications require a set of Projects to run on so that will be the main filter on the query when checking notifications
