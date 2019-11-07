@@ -56,7 +56,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         "Add user"                          => [4],
         "Save e-signature"                  => [8]
     ];
-    private $eventTypes = ['UPDATE','INSERT','DELETE','SELECT','OTHER','DATA_EXPORT','MANAGE','LOCK_RECORD','ESIGNATURE'];
+    private $eventTypes = ['UPDATE','INSERT','DELETE','DATA_EXPORT','MANAGE','LOCK_RECORD','ESIGNATURE'];
 
     function hook_every_page_top($project_id)
     {
@@ -705,9 +705,9 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         $rawData   = [];
         while ($row = db_fetch_assoc($q)) {
             $rawData[] = $row;
-            if ($lastEvent < $row['ts']) {
+            /*if ($lastEvent < $row['ts']) {
                 $lastEvent = $row['ts'];
-            }
+            }*/
 
             $descriptions[$row['description']] = $row;
             if (array_key_exists($row['description'], $this->notificationTypes)) {
