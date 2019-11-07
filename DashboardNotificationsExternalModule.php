@@ -56,7 +56,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         "Add user"                          => [4],
         "Save e-signature"                  => [8]
     ];
-    private $eventTypes = ['UPDATE','INSERT','DELETE','DATA_EXPORT','MANAGE','LOCK_RECORD','ESIGNATURE'];
+    private $eventTypes = ['UPDATE','INSERT','DELETE','DATA_EXPORT','OTHER','SELECT','MANAGE','LOCK_RECORD','ESIGNATURE'];
 
     function hook_every_page_top($project_id)
     {
@@ -647,24 +647,24 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
      */
     function getLogs($project, $lastEvent)
     {
-        echo "Start getLogs: ".time()."<br/>";
+        //echo "Start getLogs: ".time()."<br/>";
         if ($lastEvent == "") {
             $lastEvent = date("YmdHis");
         }
-        /*elseif (strtotime("now") - strtotime($lastEvent) < 300) {
+        elseif (strtotime("now") - strtotime($lastEvent) < 300) {
             return $lastEvent;
-        }*/
+        }
         //echo "Started Project ID, Time, and Description Log Check: ".time()."<br/>";
         $sqlID = "SELECT log_event_id
             FROM redcap_log_event use index (ts)
             WHERE project_id={$project->project_id}
-            AND ts = $lastEvent
+            AND ts >= $lastEvent
             AND  event in ('".implode("','",array_values($this->eventTypes))."')
             AND description IN ('".implode("','",array_keys($this->notificationTypes))."')
-            ORDER BY log_event_id DESC
+            ORDER BY ts ASC
             LIMIT 1";
         $qID = db_query($sqlID);
-        echo "$sqlID<br/>";
+        //echo "$sqlID<br/>";
         if ($error = db_error()) {
             throw new \Exception("Error: ".$error." trying to run the following SQL statement: ".$sqlID);
         }
@@ -673,9 +673,9 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             /*if ($lastEvent < $row['ts']) {
                 $lastEvent = $row['ts'];
             }*/
-            echo "ID is: $rawID<br/>";
+            //echo "ID is: $rawID<br/>";
         }
-        echo "Post first logging query: ".time()."<br/>";
+        //echo "Post first logging query: ".time()."<br/>";
 
         if ($rawID == "" || !is_numeric($rawID)) {
             //return date("YmdHis");
@@ -687,16 +687,15 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
                   AND  event in ('".implode("','",array_values($this->eventTypes))."')
                   AND description IN ('".implode("','",array_keys($this->notificationTypes))."')
                   ORDER BY ts DESC";*/
-        $sql = "SELECT user,pk,event_id,sql_log,event,ts,description,data_values FROM redcap_log_event use index (PRIMARY)
+        $sql = "SELECT user,pk,event_id,sql_log,event,ts,description,data_values FROM redcap_log_event use index (event_project)
                   WHERE project_id = {$project->project_id}
-                  AND log_event_id > $rawID
+                  AND log_event_id >= $rawID
                   AND  event in ('".implode("','",array_values($this->eventTypes))."')
-                  AND description IN ('".implode("','",array_keys($this->notificationTypes))."')
-                  ORDER BY ts DESC";
-        echo "$sql<br/>";
+                  AND description IN ('".implode("','",array_keys($this->notificationTypes))."')";
+        //echo "$sql<br/>";
         $q   = db_query($sql);
 
-        echo "Post second log query: ".time()."<br/>";
+        //echo "Post second log query: ".time()."<br/>";
         if ($error = db_error()) {
             throw new \Exception("Error: ".$error." trying to run the following SQL statement: ".$sql);
         }
@@ -714,10 +713,10 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
                 $this->handleLogEntry($project, $row['description'], $row);
             }
         }
-        echo "Sending lastevent: ".time()."<br/>";
+        //echo "Sending lastevent: ".time()."<br/>";
         //echo "After all checks: ".time()."<br/>";
-        //return date("YmdHis");
-        return $lastEvent;
+        return date("YmdHis");
+        //return $lastEvent;
     }
 
     /* All notifications require a set of Projects to run on so that will be the main filter on the query when checking notifications
