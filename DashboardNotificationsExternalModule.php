@@ -650,22 +650,42 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         if ($lastEvent == "") {
             $lastEvent = date("YmdHis");
         }
-        elseif (strtotime("now") - strtotime($lastEvent) < 300) {
+        /*elseif (strtotime("now") - strtotime($lastEvent) < 300) {
             return $lastEvent;
-        }
+        }*/
         //echo "Started Project ID, Time, and Description Log Check: ".time()."<br/>";
-        /*$sql = "SELECT * FROM redcap_log_event
-                  WHERE project_id = {$project->project_id}
-                  AND ts > $lastEvent
-                  AND description IN ('".implode("','",array_keys($this->notificationTypes))."')
-                  ORDER BY ts DESC";*/
-        $sql = "SELECT user,pk,event_id,sql_log,event,ts,description,data_values FROM redcap_log_event use index (ts)
+        $sqlID = "SELECT log_event_id
+            FROM redcap_log_event use index (ts)
+            WHERE project_id={$project->project_id}
+            AND ts > $lastEvent
+            ORDER BY log_event_id DESC
+            LIMIT 1";
+        $qID = db_query($sqlID);
+        echo "$sqlID<br/>";
+        if ($error = db_error()) {
+            throw new \Exception("Error: ".$error." trying to run the following SQL statement: ".$sqlID);
+        }
+        while ($rowID = db_fetch_assoc($qID)) {
+            $rawID = $rowID['log_event_id'];
+            /*if ($lastEvent < $row['ts']) {
+                $lastEvent = $row['ts'];
+            }*/
+            echo "ID is: $rawID<br/>";
+        }
+
+        /*$sql = "SELECT user,pk,event_id,sql_log,event,ts,description,data_values FROM redcap_log_event use index (ts)
                   WHERE project_id = {$project->project_id}
                   AND ts > $lastEvent
                   AND  event in ('".implode("','",array_values($this->eventTypes))."')
                   AND description IN ('".implode("','",array_keys($this->notificationTypes))."')
+                  ORDER BY ts DESC";*/
+        $sql = "SELECT user,pk,event_id,sql_log,event,ts,description,data_values FROM redcap_log_event use index (PRIMARY)
+                  WHERE project_id = {$project->project_id}
+                  AND log_event_id > $rawID
+                  AND  event in ('".implode("','",array_values($this->eventTypes))."')
+                  AND description IN ('".implode("','",array_keys($this->notificationTypes))."')
                   ORDER BY ts DESC";
-        //echo "$sql<br/>";
+        echo "$sql<br/>";
         $q   = db_query($sql);
 
         if ($error = db_error()) {
@@ -686,7 +706,8 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             }
         }
         //echo "After all checks: ".time()."<br/>";
-        return date("YmdHis");
+        //return date("YmdHis");
+        return $lastEvent;
     }
 
     /* All notifications require a set of Projects to run on so that will be the main filter on the query when checking notifications
