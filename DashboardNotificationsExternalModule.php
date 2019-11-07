@@ -647,6 +647,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
      */
     function getLogs($project, $lastEvent)
     {
+        echo "Start getLogs: ".time()."<br/>";
         if ($lastEvent == "") {
             $lastEvent = date("YmdHis");
         }
@@ -674,6 +675,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             }*/
             echo "ID is: $rawID<br/>";
         }
+        echo "Post first logging query: ".time()."<br/>";
 
         if ($rawID == "" || !is_numeric($rawID)) {
             //return date("YmdHis");
@@ -694,6 +696,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         echo "$sql<br/>";
         $q   = db_query($sql);
 
+        echo "Post second log query: ".time()."<br/>";
         if ($error = db_error()) {
             throw new \Exception("Error: ".$error." trying to run the following SQL statement: ".$sql);
         }
@@ -711,6 +714,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
                 $this->handleLogEntry($project, $row['description'], $row);
             }
         }
+        echo "Sending lastevent: ".time()."<br/>";
         //echo "After all checks: ".time()."<br/>";
         //return date("YmdHis");
         return $lastEvent;
