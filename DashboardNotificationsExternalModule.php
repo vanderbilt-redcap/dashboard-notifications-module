@@ -657,7 +657,9 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         $sqlID = "SELECT log_event_id
             FROM redcap_log_event use index (ts)
             WHERE project_id={$project->project_id}
-            AND ts > $lastEvent
+            AND ts = $lastEvent
+            AND  event in ('".implode("','",array_values($this->eventTypes))."')
+            AND description IN ('".implode("','",array_keys($this->notificationTypes))."')
             ORDER BY log_event_id DESC
             LIMIT 1";
         $qID = db_query($sqlID);
@@ -674,7 +676,8 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         }
 
         if ($rawID == "" || !is_numeric($rawID)) {
-            return date("YmdHis");
+            //return date("YmdHis");
+            return $lastEvent;
         }
         /*$sql = "SELECT user,pk,event_id,sql_log,event,ts,description,data_values FROM redcap_log_event use index (ts)
                   WHERE project_id = {$project->project_id}
@@ -699,9 +702,9 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         $rawData   = [];
         while ($row = db_fetch_assoc($q)) {
             $rawData[] = $row;
-            /*if ($lastEvent < $row['ts']) {
+            if ($lastEvent < $row['ts']) {
                 $lastEvent = $row['ts'];
-            }*/
+            }
 
             $descriptions[$row['description']] = $row;
             if (array_key_exists($row['description'], $this->notificationTypes)) {
