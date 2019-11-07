@@ -658,6 +658,8 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             FROM redcap_log_event use index (ts)
             WHERE project_id={$project->project_id}
             AND ts > $lastEvent
+            AND  event in ('".implode("','",array_values($this->eventTypes))."')
+            AND description IN ('".implode("','",array_keys($this->notificationTypes))."')
             ORDER BY log_event_id DESC
             LIMIT 1";
         $qID = db_query($sqlID);
