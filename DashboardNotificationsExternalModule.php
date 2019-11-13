@@ -278,7 +278,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         if (isset($matches[0]) && !empty($matches[0])) {
             $lastPosition = 0;
             foreach ($matches[0] as $index => $operator) {
-                $thisPosition = strpos($string, $matches[0][$index],$lastPosition);
+                $thisPosition = strpos($string, $matches[0][$index],$lastPosition + 1);
                 if ($index == 0) {
                     $daysAdd[$index] = trim(substr($string,0,$thisPosition));
                 } else {
