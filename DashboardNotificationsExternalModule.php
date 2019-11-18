@@ -1196,7 +1196,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         $matchCount = $this->checkMatchCount($fields,$project,$eventId,$instance,$recordData[$recordId]);
 
         if ($matchCount === count($fields)) {
-            $callback($recordId, $formName);
+            $callback($recordId, $formName, $instance);
         }
     }
 
