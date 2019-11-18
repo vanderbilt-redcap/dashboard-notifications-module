@@ -651,9 +651,9 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         if ($lastEvent == "") {
             $lastEvent = date("YmdHis");
         }
-        elseif (strtotime("now") - strtotime($lastEvent) < 300) {
+        /*elseif (strtotime("now") - strtotime($lastEvent) < 300) {
             return $lastEvent;
-        }
+        }*/
         //echo "Started Project ID, Time, and Description Log Check: ".time()."<br/>";
         $sqlID = "SELECT log_event_id
             FROM redcap_log_event use index (ts)
