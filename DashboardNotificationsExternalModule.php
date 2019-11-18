@@ -651,9 +651,9 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         if ($lastEvent == "") {
             $lastEvent = date("YmdHis");
         }
-        /*elseif (strtotime("now") - strtotime($lastEvent) < 300) {
+        elseif (strtotime("now") - strtotime($lastEvent) < 300) {
             return $lastEvent;
-        }*/
+        }
         //echo "Started Project ID, Time, and Description Log Check: ".time()."<br/>";
         $sqlID = "SELECT log_event_id
             FROM redcap_log_event use index (ts)
@@ -927,12 +927,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
                 break;
             case 5: //Field Data Check
                 if (array_key_exists(self::FIELD_NAME_SETTING, $jsonOptions)) {
-                    echo "Initial notification message:<br/>";
-                    echo "<pre>";
-                    print_r($notificationMessage);
-                    echo "</pre>";
                     $this->checkRecordFields($project, $logEntry, $jsonOptions[self::FIELD_NAME_SETTING], function ($recordId, $formName=null, $instance=null) use ($notification, $user, $userList, $pastDue, $displayDate, &$notificationMessage) {
-                        echo "New instance: $instance<br/>";
                         $notificationMessage['record_id'] = $recordId;
                         $notificationMessage['form_name'] = $formName;
                         $notificationMessage['instance'] = $instance;
