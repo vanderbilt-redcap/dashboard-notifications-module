@@ -927,7 +927,12 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
                 break;
             case 5: //Field Data Check
                 if (array_key_exists(self::FIELD_NAME_SETTING, $jsonOptions)) {
+                    echo "Initial notification message:<br/>";
+                    echo "<pre>";
+                    print_r($notificationMessage);
+                    echo "</pre>";
                     $this->checkRecordFields($project, $logEntry, $jsonOptions[self::FIELD_NAME_SETTING], function ($recordId, $formName=null, $instance=null) use ($notification, $user, $userList, $pastDue, $displayDate, &$notificationMessage) {
+                        echo "New instance: $instance<br/>";
                         $notificationMessage['record_id'] = $recordId;
                         $notificationMessage['form_name'] = $formName;
                         $notificationMessage['instance'] = $instance;
