@@ -46,6 +46,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
 
     private $notificationTypes = [
         "Create record"                     => [0, 5, 6, 7],
+        "Upload document"                   => [0, 5, 6, 7],
         "Create survey response"            => [0,5,6,7],
         "Update record"                     => [5, 6, 7],
         "Create data collection instrument" => [1],
@@ -56,7 +57,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         "Add user"                          => [4],
         "Save e-signature"                  => [8]
     ];
-    private $eventTypes = ['UPDATE','INSERT','DELETE','DATA_EXPORT','OTHER','SELECT','MANAGE','LOCK_RECORD','ESIGNATURE'];
+    private $eventTypes = ['UPDATE','INSERT','DELETE','DATA_EXPORT','OTHER','SELECT','MANAGE','LOCK_RECORD','ESIGNATURE','DOC_UPLOAD'];
 
     function hook_every_page_top($project_id)
     {
