@@ -119,10 +119,11 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         if (isset($recordData[$timeframe]) && $recordData[$timeframe] != "") {
             $timeframe = $recordData[$timeframe];
         }
+
         if (!in_array(strtolower($timeframe),array("days","weeks","months"))) return "";
 
         if (is_numeric($string) && $string !== "") {
-            return date("Y-m-d", strtotime(" + $string ".strtolower($timeframe)));
+            return date("Y-m-d", strtotime((intval($string)  < 0 ? "" : "+")."$string ".strtolower($timeframe)));
         }
 
         list($stringsToReplace,$fieldNamesReplace,$operators,$daysAdd) = $this->parseLogicString($string);
