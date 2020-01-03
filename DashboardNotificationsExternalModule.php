@@ -930,6 +930,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             case 5: //Field Data Check
                 if (array_key_exists(self::FIELD_NAME_SETTING, $jsonOptions)) {
                     $this->checkRecordFields($project, $logEntry, $jsonOptions[self::FIELD_NAME_SETTING], function ($recordId, $formName=null, $instance=null) use ($notification, $user, $userList, $pastDue, $displayDate, &$notificationMessage) {
+                        echo "The form name is: $formName<br/>";
                         $notificationMessage['record_id'] = $recordId;
                         $notificationMessage['form_name'] = $formName;
                         $notificationMessage['instance'] = $instance;
@@ -1159,7 +1160,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         }
 
         $logFieldMatch = false;
-
+        $matchedField = "";
         foreach ($fields as $fieldName => $checkValues) {
             $fieldMeta = $project->metadata[$fieldName];
             $isCheckbox = $fieldMeta['element_type'] === 'checkbox';
@@ -1167,12 +1168,14 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
                 foreach ($checkValues as $checkValue) {
                     if (in_array($fieldName."(".$checkValue.")", array_keys($logVals))) {
                         $logFieldMatch = true;
+                        $matchedField = $fieldName;
                     }
                 }
             }
             else {
                 if (in_array($fieldName, array_keys($logVals))) {
                     $logFieldMatch = true;
+                    $matchedField = $fieldName;
                 }
             }
         }
@@ -1180,7 +1183,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             return;
         }
 
-        $fieldMetaData = $project->metadata[trim(array_pop(array_keys($logVals)))];
+        $fieldMetaData = $project->metadata[$matchedField];
         $formName = $fieldMetaData['form_name'];
 
         //TODO This doesn't actually check whether the fields are repeating, but only the form containing the record ID. FIX THIS!
@@ -1360,9 +1363,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
                     $instanceCount[] = 1;
                 }
                 $currentDate = date("Y-m-d");
-/*echo "<pre>";
-print_r($projectData);
-echo "</pre>";*/
+
                 foreach ($notifications as $recordID => $eventData) {
                     $scheduling = json_decode($eventData[$notifEventID][$scheduledField], true);
                     $access = json_decode($eventData[$notifEventID][$this->getProjectSetting('access-json', $projectID)], true);
