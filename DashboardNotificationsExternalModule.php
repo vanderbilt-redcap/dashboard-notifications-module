@@ -656,9 +656,10 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         elseif (strtotime("now") - strtotime($lastEvent) < 300) {
             return $lastEvent;
         }
+        $log_event_table = method_exists('\REDCap', 'getLogEventTable') ? \REDCap::getLogEventTable($project->project_id) : "redcap_log_event";
         //echo "Started Project ID, Time, and Description Log Check: ".time()."<br/>";
         $sqlID = "SELECT log_event_id
-            FROM redcap_log_event use index (ts)
+            FROM ".$log_event_table." use index (ts)
             WHERE project_id={$project->project_id}
             AND ts >= $lastEvent
             AND  event in ('".implode("','",array_values($this->eventTypes))."')
@@ -689,7 +690,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
                   AND  event in ('".implode("','",array_values($this->eventTypes))."')
                   AND description IN ('".implode("','",array_keys($this->notificationTypes))."')
                   ORDER BY ts DESC";*/
-        $sql = "SELECT user,pk,event_id,sql_log,event,ts,description,data_values FROM redcap_log_event use index (event_project)
+        $sql = "SELECT user,pk,event_id,sql_log,event,ts,description,data_values FROM ".$log_event_table." use index (event_project)
                   WHERE project_id = {$project->project_id}
                   AND log_event_id >= $rawID
                   AND  event in ('".implode("','",array_values($this->eventTypes))."')
