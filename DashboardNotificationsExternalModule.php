@@ -77,7 +77,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
 
             $project = new \Project($project_id);
 
-            $lastEvent = $this->getProjectSetting('lastEvent') ? $this->getProjectSetting('lastEvent') : 0;
+            $lastEvent = $this->getProjectSetting('lastEvent') ? $this->getProjectSetting('lastEvent') : "";
 
             $lastEvent = $this->getLogs($project, $lastEvent);
 
@@ -650,19 +650,23 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
     function getLogs($project, $lastEvent)
     {
         //echo "Start getLogs: ".time()."<br/>";
+        $cutoffDate = date("YmdHis");
         if ($lastEvent == "") {
             $lastEvent = date("YmdHis");
-            return $lastEvent;
+        }
+        else if (strtotime("now") - strtotime($lastEvent) > 2592000) {
+            $cutoffDate = date("YmdHis",strtotime($lastEvent) + 604800);
         }
         elseif (strtotime("now") - strtotime($lastEvent) < 300) {
             return $lastEvent;
         }
+
         $log_event_table = method_exists('\REDCap', 'getLogEventTable') ? \REDCap::getLogEventTable($project->project_id) : "redcap_log_event";
         //echo "Started Project ID, Time, and Description Log Check: ".time()."<br/>";
         $sqlID = "SELECT log_event_id
             FROM ".$log_event_table." use index (ts)
             WHERE project_id={$project->project_id}
-            AND ts >= $lastEvent
+            AND ts >= $lastEvent AND ts <= $cutoffDate
             AND  event in ('".implode("','",array_values($this->eventTypes))."')
             AND description IN ('".implode("','",array_keys($this->notificationTypes))."')
             ORDER BY ts ASC
