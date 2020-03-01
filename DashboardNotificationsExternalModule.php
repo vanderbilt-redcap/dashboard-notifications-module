@@ -723,7 +723,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         }
         //echo "Sending lastevent: ".time()."<br/>";
         //echo "After all checks: ".time()."<br/>";
-        return date("YmdHis");
+        return $cutoffDate;
         //return $lastEvent;
     }
 
