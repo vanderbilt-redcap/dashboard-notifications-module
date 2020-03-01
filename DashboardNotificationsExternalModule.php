@@ -687,7 +687,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
 
         if ($rawID == "" || !is_numeric($rawID)) {
             //return date("YmdHis");
-            return $lastEvent;
+            return $cutoffDate;
         }
         /*$sql = "SELECT user,pk,event_id,sql_log,event,ts,description,data_values FROM redcap_log_event use index (ts)
                   WHERE project_id = {$project->project_id}
