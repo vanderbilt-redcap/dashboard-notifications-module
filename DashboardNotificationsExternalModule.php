@@ -652,6 +652,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         //echo "Start getLogs: ".time()."<br/>";
         if ($lastEvent == "") {
             $lastEvent = date("YmdHis");
+            return $lastEvent;
         }
         elseif (strtotime("now") - strtotime($lastEvent) < 300) {
             return $lastEvent;
