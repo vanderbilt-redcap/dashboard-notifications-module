@@ -662,7 +662,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         }
 
         $log_event_table = method_exists('\REDCap', 'getLogEventTable') ? \REDCap::getLogEventTable($project->project_id) : "redcap_log_event";
-        //echo "Started Project ID, Time, and Description Log Check: ".time()."<br/>";
+        echo "Started Project ID, Time, and Description Log Check: ".time()."<br/>";
         $sqlID = "SELECT log_event_id
             FROM ".$log_event_table." use index (ts)
             WHERE project_id={$project->project_id}
@@ -703,7 +703,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             }*/
             //echo "ID is: $rawID<br/>";
         }
-        //echo "Post first logging query: ".time()."<br/>";
+        echo "Post first logging query: ".time()."<br/>";
 
         if ($rawID == "" || !is_numeric($rawID) || $rawLastID == "" || !is_numeric($rawLastID)) {
             //return date("YmdHis");
@@ -723,12 +723,12 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         //echo "$sql<br/>";
         $q   = db_query($sql);
 
-        //echo "Post second log query: ".time()."<br/>";
+        echo "Post second log query: ".time()."<br/>";
         if ($error = db_error()) {
             throw new \Exception("Error: ".$error." trying to run the following SQL statement: ".$sql);
         }
 
-        //echo "After Project ID, Time, and Description Log Check: ".time()."<br/>";
+        echo "After Project ID, Time, and Description Log Check: ".time()."<br/>";
         $rawData   = [];
         while ($row = db_fetch_assoc($q)) {
             $rawData[] = $row;
@@ -741,7 +741,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
                 $this->handleLogEntry($project, $row['description'], $row);
             }
         }
-        //echo "Sending lastevent: ".time()."<br/>";
+        echo "Sending lastevent: ".time()."<br/>";
         //echo "After all checks: ".time()."<br/>";
         return $cutoffDate;
         //return $lastEvent;
