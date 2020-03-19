@@ -82,7 +82,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             $lastEvent = $this->getLogs($project, $lastEvent);
 
             $this->disableUserBasedSettingPermissions();
-            $this->setProjectSetting('lastEvent', $lastEvent);
+            //$this->setProjectSetting('lastEvent', $lastEvent);
         }
     }
 
@@ -720,8 +720,8 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
                   AND log_event_id >= $rawID AND log_event_id <= $rawLastID
                   AND  event in ('".implode("','",array_values($this->eventTypes))."')
                   AND description IN ('".implode("','",array_keys($this->notificationTypes))."')";
-        //echo "$sql<br/>";
-        $q   = db_query($sql);
+        echo "$sql<br/>";
+        //$q   = db_query($sql);
 
         echo "Post second log query: ".time()."<br/>";
         if ($error = db_error()) {
@@ -738,7 +738,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
 
             $descriptions[$row['description']] = $row;
             if (array_key_exists($row['description'], $this->notificationTypes)) {
-                $this->handleLogEntry($project, $row['description'], $row);
+                //$this->handleLogEntry($project, $row['description'], $row);
             }
         }
         echo "Sending lastevent: ".time()."<br/>";
