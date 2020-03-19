@@ -82,7 +82,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             $lastEvent = $this->getLogs($project, $lastEvent);
 
             $this->disableUserBasedSettingPermissions();
-            //$this->setProjectSetting('lastEvent', $lastEvent);
+            $this->setProjectSetting('lastEvent', $lastEvent);
         }
     }
 
@@ -654,8 +654,8 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         if ($lastEvent == "") {
             $lastEvent = date("YmdHis");
         }
-        else if (strtotime("now") - strtotime($lastEvent) > 86400) {
-            $cutoffDate = date("YmdHis",strtotime($lastEvent) + 86400);
+        else if (strtotime("now") - strtotime($lastEvent) > 604800) {
+            $cutoffDate = date("YmdHis",strtotime($lastEvent) + 604800);
         }
         elseif (strtotime("now") - strtotime($lastEvent) < 300) {
             return $lastEvent;
@@ -703,7 +703,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             }*/
             //echo "ID is: $rawID<br/>";
         }
-        echo "Post first logging query: ".time()."<br/>";
+        //echo "Post first logging query: ".time()."<br/>";
 
         if ($rawID == "" || !is_numeric($rawID) || $rawLastID == "" || !is_numeric($rawLastID)) {
             //return date("YmdHis");
@@ -723,12 +723,12 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         //echo "$sql<br/>";
         $q   = db_query($sql);
 
-        echo "Post second log query: ".time()."<br/>";
+        //echo "Post second log query: ".time()."<br/>";
         if ($error = db_error()) {
             throw new \Exception("Error: ".$error." trying to run the following SQL statement: ".$sql);
         }
 
-        echo "After Project ID, Time, and Description Log Check: ".time()."<br/>";
+        //echo "After Project ID, Time, and Description Log Check: ".time()."<br/>";
         $rawData   = [];
         while ($row = db_fetch_assoc($q)) {
             $rawData[] = $row;
@@ -741,7 +741,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
                 $this->handleLogEntry($project, $row['description'], $row);
             }
         }
-        echo "Sending lastevent: ".time()."<br/>";
+        //echo "Sending lastevent: ".time()."<br/>";
         //echo "After all checks: ".time()."<br/>";
         return $cutoffDate;
         //return $lastEvent;
@@ -881,9 +881,9 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
 
             $notificationMessage = $this->processNotificationTrigger($notification,$project,$logEntry,$logType,$userList,$pastDue,$displayDate);
 
-            /*if (!empty($notificationMessage['message'])) {
+            if (!empty($notificationMessage['message'])) {
                 $this->saveNotification($notification, $logEntry['user'], $userList, $notificationMessage, $pastDue, $displayDate);
-            }*/
+            }
         }
     }
 
