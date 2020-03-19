@@ -724,7 +724,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
                   AND  event in ('".implode("','",array_values($this->eventTypes))."')
                   AND description IN ('".implode("','",array_keys($this->notificationTypes))."')";
         echo "$sql<br/>";
-        //$q   = db_query($sql);
+        $q   = db_query($sql);
 
         echo "Post second log query: ".time()."<br/>";
         if ($error = db_error()) {
