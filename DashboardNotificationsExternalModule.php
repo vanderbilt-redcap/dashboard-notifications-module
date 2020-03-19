@@ -728,7 +728,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             throw new \Exception("Error: ".$error." trying to run the following SQL statement: ".$sql);
         }
 
-        //echo "After Project ID, Time, and Description Log Check: ".time()."<br/>";
+        echo "After Project ID, Time, and Description Log Check: ".time()."<br/>";
         $rawData   = [];
         while ($row = db_fetch_assoc($q)) {
             $rawData[] = $row;
@@ -738,7 +738,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
 
             $descriptions[$row['description']] = $row;
             if (array_key_exists($row['description'], $this->notificationTypes)) {
-                //$this->handleLogEntry($project, $row['description'], $row);
+                $this->handleLogEntry($project, $row['description'], $row);
             }
         }
         echo "Sending lastevent: ".time()."<br/>";
@@ -881,9 +881,9 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
 
             $notificationMessage = $this->processNotificationTrigger($notification,$project,$logEntry,$logType,$userList,$pastDue,$displayDate);
 
-            if (!empty($notificationMessage['message'])) {
+            /*if (!empty($notificationMessage['message'])) {
                 $this->saveNotification($notification, $logEntry['user'], $userList, $notificationMessage, $pastDue, $displayDate);
-            }
+            }*/
         }
     }
 
