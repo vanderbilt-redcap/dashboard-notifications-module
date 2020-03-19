@@ -741,7 +741,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
 
             $descriptions[$row['description']] = $row;
             if (array_key_exists($row['description'], $this->notificationTypes)) {
-                $this->handleLogEntry($project, $row['description'], $row);
+                //$this->handleLogEntry($project, $row['description'], $row);
             }
         }
         echo "Sending lastevent: ".time()."<br/>";
