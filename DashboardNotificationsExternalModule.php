@@ -669,7 +669,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             AND ts >= $lastEvent AND ts <= $cutoffDate
             AND  event in ('".implode("','",array_values($this->eventTypes))."')
             AND description IN ('".implode("','",array_keys($this->notificationTypes))."')
-            ORDER BY ts ASC
+            ORDER BY log_event_id ASC
             LIMIT 1";
         $qID = db_query($sqlID);
         //echo "$sqlID<br/>";
@@ -683,9 +683,29 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             }*/
             //echo "ID is: $rawID<br/>";
         }
+        $sqlID = "SELECT log_event_id
+            FROM ".$log_event_table." use index (ts)
+            WHERE project_id={$project->project_id}
+            AND ts >= $lastEvent AND ts <= $cutoffDate
+            AND  event in ('".implode("','",array_values($this->eventTypes))."')
+            AND description IN ('".implode("','",array_keys($this->notificationTypes))."')
+            ORDER BY log_event_id DESC
+            LIMIT 1";
+        $qID = db_query($sqlID);
+        //echo "$sqlID<br/>";
+        if ($error = db_error()) {
+            throw new \Exception("Error: ".$error." trying to run the following SQL statement: ".$sqlID);
+        }
+        while ($rowID = db_fetch_assoc($qID)) {
+            $rawLastID = $rowID['log_event_id'];
+            /*if ($lastEvent < $row['ts']) {
+                $lastEvent = $row['ts'];
+            }*/
+            //echo "ID is: $rawID<br/>";
+        }
         //echo "Post first logging query: ".time()."<br/>";
 
-        if ($rawID == "" || !is_numeric($rawID)) {
+        if ($rawID == "" || !is_numeric($rawID) || $rawLastID == "" || !is_numeric($rawLastID)) {
             //return date("YmdHis");
             return $cutoffDate;
         }
@@ -697,7 +717,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
                   ORDER BY ts DESC";*/
         $sql = "SELECT user,pk,event_id,sql_log,event,ts,description,data_values FROM ".$log_event_table." use index (event_project)
                   WHERE project_id = {$project->project_id}
-                  AND log_event_id >= $rawID
+                  AND log_event_id >= $rawID AND log_event_id <= $rawLastID
                   AND  event in ('".implode("','",array_values($this->eventTypes))."')
                   AND description IN ('".implode("','",array_keys($this->notificationTypes))."')";
         //echo "$sql<br/>";
