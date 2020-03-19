@@ -703,7 +703,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             }*/
             //echo "ID is: $rawID<br/>";
         }
-        //echo "Post first logging query: ".time()."<br/>";
+        echo "Post first logging query: ".time()."<br/>";
 
         if ($rawID == "" || !is_numeric($rawID) || $rawLastID == "" || !is_numeric($rawLastID)) {
             //return date("YmdHis");
@@ -723,7 +723,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         //echo "$sql<br/>";
         $q   = db_query($sql);
 
-        //echo "Post second log query: ".time()."<br/>";
+        echo "Post second log query: ".time()."<br/>";
         if ($error = db_error()) {
             throw new \Exception("Error: ".$error." trying to run the following SQL statement: ".$sql);
         }
@@ -738,10 +738,10 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
 
             $descriptions[$row['description']] = $row;
             if (array_key_exists($row['description'], $this->notificationTypes)) {
-                $this->handleLogEntry($project, $row['description'], $row);
+                //$this->handleLogEntry($project, $row['description'], $row);
             }
         }
-        //echo "Sending lastevent: ".time()."<br/>";
+        echo "Sending lastevent: ".time()."<br/>";
         //echo "After all checks: ".time()."<br/>";
         return $cutoffDate;
         //return $lastEvent;
