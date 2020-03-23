@@ -65,25 +65,23 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
     {
         $notificationProject = $this->getProjectSetting('notif-project');
 
-        /*$projects = $this->framework->getProjectsWithModuleEnabled();
-        echo "<pre>";
-        print_r($projects);
-        echo "</pre>";*/
-        /*$project = new \Project($project_id);
-        $projectEvent = $project->firstEventId;
-        $recordData = \REDCap::getData($project_id, 'array', array(), array(), array(), array(), false, false, false);
-        $testDate = $this->processDateLogic("[today_date] + 15",$recordData,"weeks");*/
-        //$this->scheduledNotifications();
         if ($notificationProject) {
             $this->notificationProject = new \Project($notificationProject);
 
             $project = new \Project($project_id);
+            $notifForm = $this->notificationProject->metadata[$this->getProjectSetting('user-created')]['form_name'];
 
             $lastEvent = $this->getProjectSetting('lastEvent') ? $this->getProjectSetting('lastEvent') : "";
 
             $notificationFields = array($this->notificationProject->table_pk,$this->getProjectSetting('notif-type'),$this->getProjectSetting('project-field'),$this->getProjectSetting('notif-active'),$this->getProjectSetting('access-json'),$this->getProjectSetting('schedule-json'),$this->getProjectSetting('role-list'),$this->getProjectSetting('role-resolve'));
 
             $this->projectNotifications = $notifications = \REDCap::getData($this->notificationProject->project_id,'array', "", $notificationFields, $this->notificationProject->firstEventId, array(), false, false, false,"[".$this->getProjectSetting('project-field')."] = '".$project_id."'");
+            foreach ($this->projectNotifications as $recordID => $notification) {
+                $instanceInfo = \REDCap::getData($this->notificationProject->project_id,'array', array($recordID), array($this->notificationProject->table_pk,$this->getProjectSetting('notif-date')), $this->notificationProject->firstEventId, array(), false, false, false);
+                $details = $instanceInfo[$recordID]['repeat_instances'][$this->notificationProject->firstEventId][$notifForm];
+                $instance = is_array($details) ? max(array_keys($details)) : 0;
+                $this->projectNotifications[$recordID][$this->notificationProject->firstEventId]['repeat_instance'] = $instance;
+            }
 
             $lastEvent = $this->getLogs($project, $lastEvent);
 
@@ -1323,8 +1321,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             $details = $notification['repeat_instances'][$projectEvent][$notifForm];
         }
         else {
-            $instanceInfo = \REDCap::getData($this->notificationProject->project_id,'array', array($recordID), array($this->notificationProject->table_pk,$this->getProjectSetting('notif-date')), $this->notificationProject->firstEventId, array(), false, false, false);
-            $details = $instanceInfo[$recordID]['repeat_instances'][$projectEvent][$notifForm];
+            $details = array($this->projectNotifications[$recordID][$projectEvent]['repeat_instance'] => "");
         }
 
         //if it's an array then get the max key. if it's not then the instance is 1
