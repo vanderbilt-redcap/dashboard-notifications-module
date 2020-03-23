@@ -59,6 +59,8 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
     ];
     private $eventTypes = ['UPDATE','INSERT','DELETE','DATA_EXPORT','OTHER','SELECT','MANAGE','LOCK_RECORD','ESIGNATURE','DOC_UPLOAD'];
 
+    private $projectNotifications = array();
+
     function hook_every_page_top($project_id)
     {
         $notificationProject = $this->getProjectSetting('notif-project');
@@ -78,6 +80,10 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             $project = new \Project($project_id);
 
             $lastEvent = $this->getProjectSetting('lastEvent') ? $this->getProjectSetting('lastEvent') : "";
+
+            $notificationFields = array($this->notificationProject->table_pk,$this->getProjectSetting('notif-type'),$this->getProjectSetting('project-field'),$this->getProjectSetting('notif-active'),$this->getProjectSetting('access-json'),$this->getProjectSetting('schedule-json'),$this->getProjectSetting('role-list'),$this->getProjectSetting('role-resolve'));
+
+            $this->projectNotifications = $notifications = \REDCap::getData($this->notificationProject->project_id,'array', "", $notificationFields, $this->notificationProject->firstEventId, array(), false, false, false,"[".$this->getProjectSetting('project-field')."] = '".$project_id."'");
 
             $lastEvent = $this->getLogs($project, $lastEvent);
 
@@ -821,7 +827,8 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             $instance = 1;
         }
 
-        $notifications = \REDCap::getData($this->notificationProject->project_id,'array', "", array(), $projectEvent, array(), false, false, false);
+        //$notifications = \REDCap::getData($this->notificationProject->project_id,'array', "", array(), $projectEvent, array(), false, false, false);
+        $notifications = $this->projectNotifications;
 
         $recordData = \REDCap::getData($project->project_id,'array',array($recordId),array(),array($eventId),false,false,false);
 
@@ -878,7 +885,6 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
                     }
                 }
             }
-
             $notificationMessage = $this->processNotificationTrigger($notification,$project,$logEntry,$logType,$userList,$pastDue,$displayDate);
 
             if (!empty($notificationMessage['message'])) {
@@ -1311,10 +1317,16 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
     {
         $projectEvent = $this->notificationProject->firstEventId;
         $notifForm = $this->notificationProject->metadata[$this->getProjectSetting('user-created')]['form_name'];
-
-        $details = $notification['repeat_instances'][$projectEvent][$notifForm];
-
         $recordID = $notification[$projectEvent][$this->notificationProject->table_pk];
+
+        if (isset($notification['repeat_instances'])) {
+            $details = $notification['repeat_instances'][$projectEvent][$notifForm];
+        }
+        else {
+            $instanceInfo = \REDCap::getData($this->notificationProject->project_id,'array', array($recordID), array($this->notificationProject->table_pk,$this->getProjectSetting('notif-date')), $this->notificationProject->firstEventId, array(), false, false, false);
+            $details = $instanceInfo[$recordID]['repeat_instances'][$projectEvent][$notifForm];
+        }
+
         //if it's an array then get the max key. if it's not then the instance is 1
         $instance = is_array($details) ? max(array_keys($details)) + 1 : 1;
 
@@ -1325,6 +1337,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         $changes[$recordID][$this->getProjectSetting("notif-date")] = date("Y-m-d", time());
         //$changes[$recordID]['redcap_repeat_instrument'] = $notifForm;
         $changes[$recordID][$this->getProjectSetting("notif-context")] = json_encode($message);
+
         if ($pastDue != "") {
             $changes[$recordID][$this->getProjectSetting("pastdue-date")] = date("Y-m-d", strtotime($pastDue));
         }
@@ -1375,7 +1388,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             $notificationProject = $this->getProjectSetting('notif-project',$projectID);
             $scheduledField = $this->getProjectSetting('schedule-json',$projectID);
             $projectField = $this->getProjectSetting('project-field',$projectID);
-            $notifications = \REDCap::getData($notificationProject, 'array');
+            //$notifications = \REDCap::getData($notificationProject, 'array');
 
             $notificationArray = array();
             //$currentDate = date('Y-m-d');
