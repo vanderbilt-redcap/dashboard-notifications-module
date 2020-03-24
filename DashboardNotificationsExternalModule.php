@@ -1362,7 +1362,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             $result = \REDCap::saveData($this->notificationProject->project_id, 'json', json_encode($changes), 'overwrite');
         }
 
-        $this->projectNotifications[$recordID][$this->notificationProject->firstEventId]['repeat_instance'] = $instance;
+        $this->projectNotifications[$recordID][$this->notificationProject->firstEventId]['repeat_instance'] = $instance + 1;
         if (!empty($result['errors'])) {
             throw new \Exception("Error on notification creation: ".$result['errors']);
         }
