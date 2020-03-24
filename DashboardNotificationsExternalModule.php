@@ -658,8 +658,8 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         if ($lastEvent == "") {
             $lastEvent = date("YmdHis");
         }
-        else if (strtotime("now") - strtotime($lastEvent) > 604800) {
-            $cutoffDate = date("YmdHis",strtotime($lastEvent) + 604800);
+        else if (strtotime("now") - strtotime($lastEvent) > 302400) {
+            $cutoffDate = date("YmdHis",strtotime($lastEvent) + 302400);
         }
         elseif (strtotime("now") - strtotime($lastEvent) < 300) {
             return $lastEvent;
