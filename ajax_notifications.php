@@ -7,9 +7,9 @@
  */
 
 include_once('base.php');
-$projectID = $_REQUEST['pid'];
+$projectID = (string) (int) $_REQUEST['pid'];
 $notifProjectID = $module->getProjectSetting("notif-project");
-$notifCount = $_POST['div_count'];
+$notifCount = htmlspecialchars($_POST['div_count'], ENT_QUOTES);
 $returnHTML = "<div class='col-md-12' style='display:inline-block;' id='notification_".$notifCount."'>";
 if (isset($_POST['notif_record']) && is_numeric($projectID) && is_numeric($notifProjectID)) {
     $recordID = "";
@@ -76,6 +76,8 @@ if (isset($_POST['notif_record']) && is_numeric($projectID) && is_numeric($notif
         echo "<div class='col-md-9'><select class='select2-drop' style='width:75%;text-overflow:ellipsis;' id='source-projects' name='projectlist[]'><option value=''></option>";
         foreach($projectList as $projectID => $projectName) {
             if ($projectID != "" && $projectName != "") {
+                $projectID = (int) $projectID;
+                $projectName = htmlspecialchars($projectName, ENT_QUOTES);
                 echo "<option value='$projectID'>$projectName</option>";
             }
         }
@@ -136,6 +138,7 @@ if (isset($_POST['notif_record']) && is_numeric($projectID) && is_numeric($notif
             $roleCheckCount++;
         }
     }
+    $tablePk = htmlspecialchars($notifProject->table_pk, ENT_QUOTES);
     $returnHTML .= "</tr></table></div></div>
         <div><h3><a style='display:inline-block;padding-left:20px;' href='#'>Fields to Track Users to Resolve This Notification</a></h3>
             <div id='".$module::ROLES_RESOLVE."_".$module::ROLES_FIELDS."'></div>
@@ -153,7 +156,7 @@ if (isset($_POST['notif_record']) && is_numeric($projectID) && is_numeric($notif
                 </div>
                 <div class='col-md-12'><input type='submit' value='Save Notification' name='notif_save' /></div>
                 </div>
-                <input type='hidden' value='$recordID' name='".$notifProject->table_pk."'/>";
+                <input type='hidden' value='$recordID' name='".$tablePk."'/>";
 }
 $returnHTML .= "</div>";
 echo $returnHTML;
@@ -202,6 +205,7 @@ echo $returnHTML;
             } else {
                 $fieldChoices = $module->getChoicesFromMetaData($fieldMeta['element_enum']);
                 foreach ($fieldChoices as $raw => $label) {
+                    $raw = htmlspecialchars($raw, ENT_QUOTES);
                     echo "fieldValueList['$fieldName']['$raw'] = '".cleanJavaString($label)."';";
                 }
             }

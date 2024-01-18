@@ -25,6 +25,8 @@ if (isset($_POST['field_name']) && is_numeric($_POST['field_count']) && is_numer
         $fieldChoices = $module->getChoicesFromMetaData($metaData[$fieldName]['element_enum']);
         $returnHTML = "<table><tr>";
         foreach ($fieldChoices as $raw => $label) {
+            $raw = htmlspecialchars($raw, ENT_QUOTES);
+            $label = htmlspecialchars($label, ENT_QUOTES);
             $returnHTML .= "<td><span><input type='checkbox' id='".FIELD_VALUE_SETTING."_".$fieldCount."_".$choiceCount."' name='".FIELD_VALUE_SETTING."_".$fieldCount."[]' value='$raw' /></span><span>$label</span></td>";
             if ($columnCount % 3 == 0) {
                 $returnHTML .= "</tr><tr>";

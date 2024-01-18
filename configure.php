@@ -15,7 +15,7 @@ require_once APP_PATH_DOCROOT . 'ProjectGeneral/header.php';
 
 <?php
 //TODO Add the POST variable to ajax call below that pulls from a dropdown of notif_class from notification project
-$projectID = $_REQUEST['pid'];
+$projectID = (string) (int) $_REQUEST['pid'];
 $notifProjectID = $module->getProjectSetting("notif-project");
 if ($projectID != "" && $notifProjectID != "") {
     if (!empty($_POST)) {
@@ -71,9 +71,15 @@ if ($projectID != "" && $notifProjectID != "") {
             $('#notif_select').append($('<option></option>').attr('value','new').text('New Notification'));
             <?php
             foreach ($existingNotifs as $recordID => $eventData) {
+                $recordID = htmlspecialchars($recordID, ENT_QUOTES);
+
                 foreach ($eventData as $event_id => $recordData) {
                     if ($event_id == "repeat_instances") continue;
-                    echo "$('#notif_select').append($('<option></option>').attr('value','".$recordID."').text('".$notifClassChoice[$recordData[$module->getProjectSetting('notif-class')]]." - ".$recordData[$module->getProjectSetting('notif-name')]."'));";
+
+                    $choiceValue = htmlspecialchars($notifClassChoice[$recordData[$module->getProjectSetting('notif-class')]], ENT_QUOTES);
+                    $notifNameValue = htmlspecialchars($recordData[$module->getProjectSetting('notif-name')], ENT_QUOTES);
+
+                    echo "$('#notif_select').append($('<option></option>').attr('value','".$recordID."').text('".$choiceValue." - ".$notifNameValue."'));";
                 }
             }
             ?>

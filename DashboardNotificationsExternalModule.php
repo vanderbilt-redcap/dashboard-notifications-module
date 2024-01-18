@@ -309,6 +309,10 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
 
     function getAutoId($projectId,$eventId = "")
     {
+        if($eventId !== ""){
+            $eventId = (string) (int) $eventId;
+        }
+
         $inTransaction = false;
         try {
             @db_query("BEGIN");
@@ -659,11 +663,13 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             return $lastEvent;
         }
 
-        $log_event_table = method_exists('\REDCap', 'getLogEventTable') ? \REDCap::getLogEventTable($project->project_id) : "redcap_log_event";
+        $projectId = (int) $project->project_id;
+
+        $log_event_table = method_exists('\REDCap', 'getLogEventTable') ? \REDCap::getLogEventTable($projectId) : "redcap_log_event";
         //echo "Started Project ID, Time, and Description Log Check: ".time()."<br/>";
         $sqlID = "SELECT log_event_id
             FROM ".$log_event_table." use index (ts)
-            WHERE project_id={$project->project_id}
+            WHERE project_id={$projectId}
             AND ts >= $lastEvent AND ts <= $cutoffDate
             AND  event in ('".implode("','",array_values($this->eventTypes))."')
             AND description IN ('".implode("','",array_keys($this->notificationTypes))."')
@@ -683,7 +689,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         }
         $sqlID = "SELECT log_event_id
             FROM ".$log_event_table." use index (ts)
-            WHERE project_id={$project->project_id}
+            WHERE project_id={$projectId}
             AND ts >= $lastEvent AND ts <= $cutoffDate
             AND  event in ('".implode("','",array_values($this->eventTypes))."')
             AND description IN ('".implode("','",array_keys($this->notificationTypes))."')
@@ -708,13 +714,13 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             return $cutoffDate;
         }
         /*$sql = "SELECT user,pk,event_id,sql_log,event,ts,description,data_values FROM redcap_log_event use index (ts)
-                  WHERE project_id = {$project->project_id}
+                  WHERE project_id = {$projectId}
                   AND ts > $lastEvent
                   AND  event in ('".implode("','",array_values($this->eventTypes))."')
                   AND description IN ('".implode("','",array_keys($this->notificationTypes))."')
                   ORDER BY ts DESC";*/
         $sql = "SELECT user,pk,event_id,sql_log,event,ts,description,data_values FROM ".$log_event_table." use index (event_project)
-                  WHERE project_id = {$project->project_id}
+                  WHERE project_id = {$projectId}
                   AND log_event_id >= $rawID AND log_event_id <= $rawLastID
                   AND  event in ('".implode("','",array_values($this->eventTypes))."')
                   AND description IN ('".implode("','",array_keys($this->notificationTypes))."')";

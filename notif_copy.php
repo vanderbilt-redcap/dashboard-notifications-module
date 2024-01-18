@@ -13,7 +13,7 @@ require_once APP_PATH_DOCROOT . 'ProjectGeneral/header.php';
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.min.js"></script>
 
 <?php
-$projectID = $_REQUEST['pid'];
+$projectID = (string) (int) $_REQUEST['pid'];
 $notifProjectID = $module->getProjectSetting("notif-project");
 
 if ($projectID != "" && $notifProjectID != "") {
@@ -44,9 +44,16 @@ if ($projectID != "" && $notifProjectID != "") {
                     Select a Notification for Duplication<br/>
                     <select class='select2-drop' id='notif_select' style='width:90%;text-overflow: ellipsis;'>";
                         foreach ($existingNotifs as $recordID => $eventData) {
+                            $recordID = htmlspecialchars($recordID, ENT_QUOTES);
+                            
                             foreach ($eventData as $event_id => $recordData) {
                                 if ($event_id == "repeat_instances") continue;
-                                echo "<option value='$recordID'>".$notifClassChoice[$recordData[$module->getProjectSetting('notif-class')]]." - ".$recordData[$module->getProjectSetting('notif-name')]." -- Project: ".$module->getProjectName($recordData[$module->getProjectSetting('project-field')])."</option>";
+
+                                $choiceValue = htmlspecialchars($notifClassChoice[$recordData[$module->getProjectSetting('notif-class')]], ENT_QUOTES);
+                                $notifNameValue = htmlspecialchars($recordData[$module->getProjectSetting('notif-name')], ENT_QUOTES);
+                                $projectName = htmlspecialchars($module->getProjectName($recordData[$module->getProjectSetting('project-field')]), ENT_QUOTES);
+
+                                echo "<option value='$recordID'>".$choiceValue." - ".$notifNameValue." -- Project: ".$projectName."</option>";
                             }
                         }
                     echo "</select>
