@@ -1028,7 +1028,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         $usefulRecordData = array();
         if (isset($recordData['repeat_instances'][$eventId])) {
             foreach ($recordData['repeat_instances'][$eventId] as $formName => $formData) {
-                $usefulRecordData = array_merge($usefulRecordData,$formData[$instance]);
+                $usefulRecordData = array_merge($usefulRecordData,$formData[$instance] ?? []);
             }
         }
         if (isset($recordData[$eventId])) {
