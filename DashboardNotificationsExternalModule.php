@@ -567,12 +567,13 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
     }
 
     function transferRoleIDsBetweenProjects($roleIDs,$newProjectID) {
+        $newProjectID = (int) $newProjectID;
         $returnIDs = array();
         $sql = "SELECT d2.role_id,d2.role_name,d2.project_id
             FROM redcap_user_roles d
             JOIN redcap_user_roles d2
               ON d.role_name=d2.role_name AND d2.project_id=$newProjectID
-            WHERE d.role_id IN (".implode(',',$roleIDs).")";
+            WHERE d.role_id IN (".implode(',',$this->framework->escape($roleIDs)).")";
         //echo "$sql<br/>";
         $result = db_query($sql);
         while ($row = db_fetch_assoc($result)) {

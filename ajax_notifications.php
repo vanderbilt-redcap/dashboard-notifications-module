@@ -6,6 +6,11 @@
  * Time: 1:32 PM
  */
 
+$cleanJavaString = function($junkstring) {
+    $junkstring = (strlen($junkstring) > 30 ? substr($junkstring,0,25)."..." : $junkstring);
+    return trim(preg_replace('/\s+/',' ',str_replace("'","\"",strip_tags($junkstring))));
+};
+
 include_once('base.php');
 $projectID = (string) (int) $_REQUEST['pid'];
 $notifProjectID = $module->getProjectSetting("notif-project");
@@ -184,7 +189,7 @@ echo $returnHTML;
     var projectFormList = {};
     <?php
         foreach (array_keys($sourceProject->forms) as $key) {
-            echo "projectFormList['$key'] = '".cleanJavaString($sourceProject->forms[$key]['menu'])."';";
+            echo "projectFormList['$key'] = '".$cleanJavaString($sourceProject->forms[$key]['menu'])."';";
         }
     ?>
     var projectFieldList = {};
@@ -193,7 +198,7 @@ echo $returnHTML;
     //console.log(notificationSettings);
     <?php
     foreach ($sourceMetaData as $fieldName => $fieldMeta) {
-        echo "projectFieldList['$fieldName'] = '" . cleanJavaString($fieldMeta['element_label']) . "';";
+        echo "projectFieldList['$fieldName'] = '" . $cleanJavaString($fieldMeta['element_label']) . "';";
         echo "fieldValueList['$fieldName'] = {};";
         if (in_array($fieldMeta['element_type'], array("radio", "select", "checkbox", "yesno", "truefalse"))) {
             if ($fieldMeta['element_type'] == "truefalse") {
@@ -206,7 +211,7 @@ echo $returnHTML;
                 $fieldChoices = $module->getChoicesFromMetaData($fieldMeta['element_enum']);
                 foreach ($fieldChoices as $raw => $label) {
                     $raw = htmlspecialchars($raw, ENT_QUOTES);
-                    echo "fieldValueList['$fieldName']['$raw'] = '".cleanJavaString($label)."';";
+                    echo "fieldValueList['$fieldName']['$raw'] = '".$cleanJavaString($label)."';";
                 }
             }
         }
@@ -427,9 +432,3 @@ echo $returnHTML;
         //loadNotifSettings();
     });
 </script>
-<?php
-function cleanJavaString($junkstring) {
-    $junkstring = (strlen($junkstring) > 30 ? substr($junkstring,0,25)."..." : $junkstring);
-    return trim(preg_replace('/\s+/',' ',str_replace("'","\"",strip_tags($junkstring))));
-}
-?>
