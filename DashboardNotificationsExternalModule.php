@@ -272,8 +272,6 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         $stringsToReplace = $matchRegEx[0];
         $fieldNamesReplace = $matchRegEx[1];
 
-        if (count($fieldNamesReplace[0] ?? []) > 1 || count($stringsToReplace[0] ?? []) > 1) return array();
-
         $daysAdd = array();
         if (isset($matches[0]) && !empty($matches[0])) {
             $lastPosition = 0;
