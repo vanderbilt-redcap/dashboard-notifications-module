@@ -986,7 +986,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
                 break;
             case 7: //Record Count
                 $recordId = $logEntry['pk'];
-                if (array_key_exists(self::FIELD_NAME_SETTING, $jsonOptions) && array_key_exists(self::RECORD_COUNT_SETTING, $jsonOptions) && !in_array($recordId, $jsonOptions['record_history'])) {
+                if (array_key_exists(self::FIELD_NAME_SETTING, $jsonOptions) && array_key_exists(self::RECORD_COUNT_SETTING, $jsonOptions) && !in_array($recordId, $jsonOptions['record_history'] ?? [])) {
                     $jsonOptions['record_history'][] = $recordId;
                     $matched = false;
                     $this->checkRecordFields($project, $logEntry, $jsonOptions[self::FIELD_NAME_SETTING], function ($recordId, $formName=null, $instance=null) use ($projectEvent,$jsonOptions,$notification, $user, $userList, $pastDue, $displayDate, &$notificationMessage) {
