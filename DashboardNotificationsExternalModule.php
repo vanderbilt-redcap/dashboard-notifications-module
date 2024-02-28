@@ -1151,6 +1151,10 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
             if (preg_match_all('/\([\s\S]*?\)/', $sql, $matches) === 2) {
                 $keys    = array_map('trim',explode(',', str_replace(')', '', str_replace('(', '', $matches[0][0]))));
                 $values  = array_map('trim',explode(',', str_replace('\'', '', str_replace(')', '', str_replace('(', '', $matches[0][1])))));
+                if(count($keys) !== count($values)){
+                    return false;
+                }    
+
                 $keyVals = array_combine($keys, $values);
 
                 return $keyVals;
