@@ -1256,7 +1256,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
                 if ($matches[$eventId][$fieldName] > 0) {
                     $matchCount++;
                 }
-            } else if ($project->isRepeatingForm($eventId,$fieldMeta['form_name']) && array_key_exists($eventId, $recordData['repeat_instances'])) {
+            } else if ($project->isRepeatingForm($eventId,$fieldMeta['form_name']) && array_key_exists($eventId, $recordData['repeat_instances'] ?? [])) {
                 foreach ($recordData['repeat_instances'][$eventId] as $form => $instances) {
                     foreach ($instances as $instanceNum => $instanceFields) {
                         if ($instanceNum != $instance) continue;
