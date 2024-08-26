@@ -1250,7 +1250,7 @@ class DashboardNotificationsExternalModule extends AbstractExternalModule
         foreach ($fields as $fieldName => $checkValues) {
             $fieldMeta = $project->metadata[$fieldName];
             $isCheckbox = $fieldMeta['element_type'] === 'checkbox';
-            if (!$project->isRepeatingForm($eventId,$fieldMeta['form_name']) && array_key_exists($eventId, $recordData)) {
+            if (!$project->isRepeatingForm($eventId,$fieldMeta['form_name']) && array_key_exists($eventId, $recordData ?? [])) {
                 $actualValue = $recordData[$eventId][$fieldName];
                 $matches[$eventId][$fieldName] = $this->checkSingleValue($checkValues, $actualValue, $isCheckbox);
                 if ($matches[$eventId][$fieldName] > 0) {
